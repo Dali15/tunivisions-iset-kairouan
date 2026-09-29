@@ -8,10 +8,23 @@ from django.contrib.auth import get_user_model
 
 User = get_user_model()
 
-# Create superuser with credentials from environment or defaults
-username = os.environ.get('DJANGO_SUPERUSER_USERNAME', 'admin')
-email = os.environ.get('DJANGO_SUPERUSER_EMAIL', 'admin@example.com')
-password = os.environ.get('DJANGO_SUPERUSER_PASSWORD', 'Admin123!')
+
+def get_credential(*names):
+    for name in names:
+        value = os.environ.get(name)
+        if value:
+            return value
+    return ''
+
+
+# Create superuser with credentials from environment
+username = get_credential('ADMIN_USERNAME', 'DJANGO_SUPERUSER_USERNAME')
+email = get_credential('ADMIN_EMAIL', 'DJANGO_SUPERUSER_EMAIL')
+password = get_credential('ADMIN_PASSWORD', 'DJANGO_SUPERUSER_PASSWORD')
+
+if not username or not email or not password:
+    print('ADMIN_USERNAME, ADMIN_EMAIL, and ADMIN_PASSWORD (or DJANGO_SUPERUSER_* equivalents) must be set. Skipping superuser creation.', flush=True)
+    raise SystemExit(0)
 
 if not User.objects.filter(username=username).exists():
     print(f"Creating superuser '{username}'...", flush=True)
@@ -29,5 +42,5 @@ else:
     print(f"✅ User '{username}' updated! Password reset, promoted to superuser & role set to Owner.", flush=True)
 
 print(f"   Email: {email}", flush=True)
-print(f"   Password: {password[:2]}****{password[-2:]} (masked)", flush=True)
+print("   Password: ******** (masked)", flush=True)
 

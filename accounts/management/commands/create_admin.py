@@ -4,14 +4,29 @@ import os
 
 User = get_user_model()
 
+
+def get_credential(*names):
+    for name in names:
+        value = os.getenv(name)
+        if value:
+            return value
+    return ''
+
+
 class Command(BaseCommand):
     help = 'Create or update a superuser account'
 
     def handle(self, *args, **options):
         # Get credentials from environment variables
-        username = os.getenv('ADMIN_USERNAME', 'admin')
-        email = os.getenv('ADMIN_EMAIL', 'med2006dali@gmail.com')
-        password = os.getenv('ADMIN_PASSWORD', 'admin123456')
+        username = get_credential('ADMIN_USERNAME', 'DJANGO_SUPERUSER_USERNAME')
+        email = get_credential('ADMIN_EMAIL', 'DJANGO_SUPERUSER_EMAIL')
+        password = get_credential('ADMIN_PASSWORD', 'DJANGO_SUPERUSER_PASSWORD')
+
+        if not username or not email or not password:
+            self.stdout.write(self.style.WARNING(
+                'ADMIN_USERNAME, ADMIN_EMAIL, and ADMIN_PASSWORD (or DJANGO_SUPERUSER_* equivalents) must be set. Skipping admin creation.'
+            ))
+            return
 
         try:
             # Check if user already exists
@@ -36,9 +51,7 @@ class Command(BaseCommand):
                 self.stdout.write(self.style.SUCCESS(f'✅ Superuser "{username}" created!'))
             
             self.stdout.write(f'📧 Email: {email}')
-            self.stdout.write(f'🔐 Password: {password}')
+            self.stdout.write('🔐 Password: ******** (masked)')
             self.stdout.write(f'\n📍 Login at: https://ai-club-ssnk.onrender.com/admin')
-        except Exception as e:
-            self.stdout.write(self.style.ERROR(f'❌ Error: {str(e)}'))
         except Exception as e:
             self.stdout.write(self.style.ERROR(f'❌ Error: {str(e)}'))

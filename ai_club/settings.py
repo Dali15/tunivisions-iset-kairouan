@@ -137,6 +137,8 @@ else:
 if os.getenv('DATABASE_URL'):
     print("✅ DATABASE_URL found. Using PostgreSQL for persistence.", flush=True)
 
+SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')
+
 
 # Password validation
 # https://docs.djangoproject.com/en/5.2/ref/settings/#auth-password-validators
@@ -172,7 +174,7 @@ USE_TZ = True
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/5.2/howto/static-files/
 
-STATIC_URL = 'static/'
+STATIC_URL = '/static/'
 STATIC_ROOT = BASE_DIR / 'staticfiles'
 STATICFILES_DIRS = [
     BASE_DIR / 'static',
@@ -182,12 +184,12 @@ STATICFILES_DIRS = [
 STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
 
 # Media Files Configuration
-MEDIA_URL = 'media/'
+MEDIA_URL = '/media/'
 MEDIA_ROOT = BASE_DIR / 'media'
 
 # CSRF & HTTPS Configuration for Production
 CSRF_TRUSTED_ORIGINS = [
-    'https://ai-club-ssnk.onrender.com',
+    'https://*.onrender.com',
 ]
 
 # Add from environment if available
@@ -198,6 +200,10 @@ if os.getenv('CSRF_TRUSTED_ORIGINS'):
 SECURE_SSL_REDIRECT = not DEBUG  # Enforce HTTPS in production
 SESSION_COOKIE_SECURE = not DEBUG
 CSRF_COOKIE_SECURE = not DEBUG
+if not DEBUG:
+    SECURE_HSTS_SECONDS = 31536000
+    SECURE_HSTS_INCLUDE_SUBDOMAINS = True
+    SECURE_HSTS_PRELOAD = True
 
 # Default primary key field type
 # https://docs.djangoproject.com/en/5.2/ref/settings/#default-auto-field
