@@ -8,7 +8,7 @@ export PYTHONUNBUFFERED=1
 
 # Apply database migrations
 echo "Running migrations..."
-python manage.py migrate --noinput || true
+python manage.py migrate --noinput
 
 # Create superuser if configured (non-blocking)
 echo "Checking for superuser creation..."

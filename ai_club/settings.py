@@ -41,7 +41,7 @@ if os.getenv('ALLOWED_HOSTS'):
 # Add Render-specific domain if in production
 if not DEBUG:
     ALLOWED_HOSTS.extend([
-        'ai-club-ssnk.onrender.com',
+        'app-for-ai-club.onrender.com',
         '.onrender.com',  # Allow any onrender.com subdomain in production
     ])
 
@@ -189,6 +189,7 @@ MEDIA_ROOT = BASE_DIR / 'media'
 
 # CSRF & HTTPS Configuration for Production
 CSRF_TRUSTED_ORIGINS = [
+    'https://app-for-ai-club.onrender.com',
     'https://*.onrender.com',
 ]
 

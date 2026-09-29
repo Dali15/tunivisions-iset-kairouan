@@ -11,19 +11,21 @@ Deploy AI Club to production in minutes using free hosting.
    - Click "New" → "Web Service"
    - Connect GitHub repository
    - Set these values:
-     - **Build Command:** `pip install -r requirements.txt && python manage.py migrate && python manage.py collectstatic --noinput`
-     - **Start Command:** `gunicorn ai_club.wsgi:application`
+   - **Build Command:** `pip install -r requirements.txt`
+       - **Start Command:** `bash start.sh`
 
 3. **Add Environment Variables**
    ```
    DEBUG=False
    SECRET_KEY=your-secret-key-here
-   ALLOWED_HOSTS=your-app.onrender.com
+    ALLOWED_HOSTS=app-for-ai-club.onrender.com
    ```
 
 4. **Deploy** → Click "Create Web Service"
 
 ✅ Done! Your app is live in ~5 minutes with free PostgreSQL database
+
+`start.sh` already runs migrations and collects static files before launching Gunicorn, so a separate pre-deploy command is not required.
 
 ---
 
