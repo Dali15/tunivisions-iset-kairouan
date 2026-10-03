@@ -28,13 +28,9 @@
                     <td>
                         <div class="d-flex align-items-center">
                             {% if user.profile_picture %}
-                            <img src="{{ user.profile_picture.url }}" class="rounded-circle me-2" width="40"
-                                height="40">
+                            <span class="tv-avatar-frame tv-avatar-xs me-2"><img src="{{ user.profile_picture.url }}" class="tv-avatar-image" alt=""></span>
                             {% else %}
-                            <div class="bg-secondary rounded-circle me-2 d-flex align-items-center justify-content-center text-white"
-                                style="width: 40px; height: 40px;">
-                                {{ user.username|slice:":1"|upper }}
-                            </div>
+                            <span class="tv-avatar-frame tv-avatar-xs me-2"><span class="tv-avatar-placeholder">{{ user.username|slice:":1"|upper }}</span></span>
                             {% endif %}
                             <strong>{{ user.username }}</strong>
                         </div>

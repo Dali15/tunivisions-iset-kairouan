@@ -2,10 +2,13 @@ from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib.auth.decorators import login_required
 from django.contrib import messages
 from accounts.decorators import roles_required
+from accounts.decorators import permission_required
 from .models import Project, ProjectFile, ProjectUpdate
 from .forms import ProjectForm, ProjectFileForm, ProjectUpdateForm
 
 
+@login_required
+@permission_required('projects.view')
 def project_list(request):
     """List all public projects - accessible to all members"""
     # All authenticated users can see public projects
@@ -34,6 +37,8 @@ def project_list(request):
     return render(request, 'projects/project_list.html', context)
 
 
+@login_required
+@permission_required('projects.view')
 def project_detail(request, project_id):
     """View project details - members can view all resources and code
     
@@ -67,7 +72,7 @@ def project_detail(request, project_id):
 
 
 @login_required
-@roles_required(['owner', 'president', 'vice_president', 'events_manager', 'media', 'design', 'hr', 'partnerships'])
+@roles_required(['president', 'vp_events', 'assistant_event'])
 def create_project(request):
     """Create a new project"""
     if request.method == 'POST':
@@ -87,15 +92,12 @@ def create_project(request):
 
 
 @login_required
+@permission_required('projects.edit')
 def edit_project(request, project_id):
     """Edit an existing project"""
     project = get_object_or_404(Project, id=project_id)
     
     # Check permission
-    if request.user != project.created_by and request.user.role == 'member':
-        messages.error(request, 'You do not have permission to edit this project.')
-        return redirect('project_detail', project_id=project.id)
-    
     if request.method == 'POST':
         form = ProjectForm(request.POST, instance=project)
         if form.is_valid():
@@ -110,15 +112,12 @@ def edit_project(request, project_id):
 
 
 @login_required
+@permission_required('projects.delete')
 def delete_project(request, project_id):
     """Delete a project"""
     project = get_object_or_404(Project, id=project_id)
     
     # Check permission
-    if request.user != project.created_by and request.user.role == 'owner':
-        messages.error(request, 'Only the project creator can delete it.')
-        return redirect('project_detail', project_id=project.id)
-    
     if request.method == 'POST':
         project.delete()
         messages.success(request, 'Project deleted successfully!')
@@ -129,6 +128,7 @@ def delete_project(request, project_id):
 
 
 @login_required
+@permission_required('projects.edit')
 def add_file(request, project_id):
     """Add a code file or asset to project
     
@@ -138,14 +138,6 @@ def add_file(request, project_id):
     project = get_object_or_404(Project, id=project_id)
     
     # Check if user is project member or creator
-    is_member = request.user in project.members.all() or request.user == project.created_by
-    is_bureau = request.user.role != 'member' and request.user.role != 'treasurer'
-    
-    # Allow if user is member, creator, or bureau member with project access
-    if not (is_member or is_bureau):
-        messages.error(request, 'Only project members can add files.')
-        return redirect('project_detail', project_id=project.id)
-    
     if request.method == 'POST':
         form = ProjectFileForm(request.POST, request.FILES)
         if form.is_valid():
@@ -163,15 +155,11 @@ def add_file(request, project_id):
 
 
 @login_required
+@permission_required('projects.delete')
 def delete_file(request, file_id):
     """Delete a file from project"""
     file_obj = get_object_or_404(ProjectFile, id=file_id)
     project = file_obj.project
-    
-    # Check permission
-    if request.user != file_obj.uploaded_by and request.user != project.created_by and request.user.role == 'member':
-        messages.error(request, 'You cannot delete this file.')
-        return redirect('project_detail', project_id=project.id)
     
     if request.method == 'POST':
         file_obj.delete()
@@ -183,6 +171,7 @@ def delete_file(request, file_id):
 
 
 @login_required
+@permission_required('projects.edit')
 def add_update(request, project_id):
     """Add a progress update to project
     
@@ -192,14 +181,6 @@ def add_update(request, project_id):
     project = get_object_or_404(Project, id=project_id)
     
     # Check if user is project member or creator
-    is_member = request.user in project.members.all() or request.user == project.created_by
-    is_bureau = request.user.role != 'member' and request.user.role != 'treasurer'
-    
-    # Allow if user is member, creator, or bureau member
-    if not (is_member or is_bureau):
-        messages.error(request, 'Only project members can post updates.')
-        return redirect('project_detail', project_id=project.id)
-    
     if request.method == 'POST':
         form = ProjectUpdateForm(request.POST)
         if form.is_valid():

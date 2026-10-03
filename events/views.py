@@ -3,11 +3,13 @@ from django.contrib.auth.decorators import login_required
 from django.contrib import messages
 from django.db.models import Q
 from .models import Event, EventRegistration
-from accounts.decorators import roles_required
+from accounts.decorators import permission_required, roles_required
+from django.views.decorators.http import require_http_methods, require_POST
 from .forms import EventForm
 
 
 @login_required
+@roles_required(['president', 'vp_events', 'assistant_event', 'vp_rh', 'assistant_rh', 'vp_bd', 'assistant_bd', 'active_member'])
 def event_list(request):
     """Display list of events with search and filtering."""
     events = Event.objects.all().order_by('-date')
@@ -40,6 +42,7 @@ def event_list(request):
 
 
 @login_required
+@permission_required('events.view')
 def event_detail(request, event_id):
     """Display event detail with setup instructions."""
     event = get_object_or_404(Event, id=event_id)
@@ -52,7 +55,7 @@ def event_detail(request, event_id):
     
     # Get attendees list (for organizer)
     attendees = None
-    if request.user == event.created_by or request.user.is_staff:
+    if request.user == event.created_by or request.user.can_access('events.edit'):
         attendees = event.registrations.select_related('user').order_by('-registered_at')
     
     context = {
@@ -65,6 +68,8 @@ def event_detail(request, event_id):
 
 
 @login_required
+@permission_required('events.register')
+@require_POST
 def register_event(request, event_id):
     """Register user for an event."""
     event = get_object_or_404(Event, id=event_id)
@@ -80,7 +85,8 @@ def register_event(request, event_id):
 
 
 @login_required
-@roles_required(['owner', 'president', 'vice_president', 'events_manager'])
+@permission_required('events.create')
+@require_http_methods(['GET', 'POST'])
 def create_event(request):
     """Create a new event. Only Owner, President, VP, and Events Manager can create events."""
     if request.method == 'POST':

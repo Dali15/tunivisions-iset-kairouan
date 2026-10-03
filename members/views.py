@@ -1,13 +1,16 @@
 from django.shortcuts import render, redirect, get_object_or_404
+from django.http import HttpResponseForbidden
 from django.contrib.auth.decorators import login_required
 from django.contrib import messages
 from django.db.models import Q
+from django.views.decorators.http import require_http_methods
 from accounts.models import User
 from events.models import EventRegistration
-from dashboard.permissions import require_permission
+from accounts.decorators import permission_required
+from .forms import MemberProfileManagementForm
 
 
-@require_permission('view_members')
+@permission_required('members.view')
 def member_list(request):
     """Display all club members with search - requires view_members permission."""
     members = User.objects.filter(is_active=True).exclude(role='president')
@@ -39,6 +42,8 @@ def member_list(request):
 @login_required
 def member_profile(request, user_id):
     """Display member profile with skills, projects, and attendance."""
+    if request.user.id != user_id and not request.user.can_access('members.view'):
+        return HttpResponseForbidden('Access denied.')
     member = get_object_or_404(User, id=user_id, is_active=True)
     
     # Get attendance info
@@ -57,38 +62,34 @@ def member_profile(request, user_id):
         'attended_events': attended_events,
         'registered_events': registered_events,
         'total_attended': attended_events.count(),
-        'can_manage_roles': request.user.has_perm('accounts.change_user'),
-        'role_choices': User.ROLE_CHOICES,
+        'can_manage_profile': request.user.can_access('members.manage'),
     }
     return render(request, 'members/member_profile.html', context)
 
+
 @login_required
-def manage_user_role(request, user_id):
-    """Update user role - requires change_user permission."""
-    if not request.user.has_perm('accounts.change_user'):
-        messages.error(request, "Permission denied.")
-        return redirect('dashboard')
-        
+@permission_required('members.manage')
+@require_http_methods(['GET', 'POST'])
+def manage_member_profile(request, user_id):
+    member = get_object_or_404(User, pk=user_id, is_active=True)
     if request.method == 'POST':
-        target_user = get_object_or_404(User, id=user_id)
-        new_role = request.POST.get('role')
-        new_secondary_role = request.POST.get('secondary_role')
-        
-        # Prevent editing Owner if you are not Owner
-        if target_user.role == 'owner' and request.user.role != 'owner':
-             messages.error(request, "Only the Owner can modify the Owner's role.")
-             return redirect('member_profile', user_id=user_id)
-        
-        if new_role:
-            target_user.role = new_role
-        
-        # secondary_role can be empty
-        target_user.secondary_role = new_secondary_role if new_secondary_role else ''
-        
-        target_user.save() # Signal triggers permission update
-        messages.success(request, f"Role for {target_user.username} updated to {target_user.get_role_display()}")
-        
-    return redirect('member_profile', user_id=user_id)
+        form = MemberProfileManagementForm(
+            request.POST,
+            request.FILES,
+            instance=member,
+        )
+        if form.is_valid():
+            form.save()
+            messages.success(request, f"Le profil de {member.get_full_name() or member.username} a été mis à jour.")
+            return redirect('member_profile', user_id=member.pk)
+    else:
+        form = MemberProfileManagementForm(instance=member)
+
+    return render(
+        request,
+        'members/manage_member_profile.html',
+        {'member': member, 'form': form},
+    )
 
 
 @login_required

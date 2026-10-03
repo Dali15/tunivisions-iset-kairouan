@@ -6,17 +6,31 @@ Use environment variables for sensitive data.
 from pathlib import Path
 import os
 from decouple import config, Csv
+from django.core.exceptions import ImproperlyConfigured
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = config('SECRET_KEY', default='django-insecure-change-me-in-production')
+SECRET_KEY = config('SECRET_KEY', default='')
+if not SECRET_KEY:
+    raise ImproperlyConfigured(
+        'The SECRET_KEY environment variable must be set when using production settings.'
+    )
 
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = config('DEBUG', default=False, cast=bool)
 
-ALLOWED_HOSTS = config('ALLOWED_HOSTS', default='localhost,127.0.0.1', cast=Csv())
+ALLOWED_HOSTS = config(
+    'ALLOWED_HOSTS',
+    default='localhost,127.0.0.1,tunivisions-iset-kairouan.onrender.com',
+    cast=Csv(),
+)
+CSRF_TRUSTED_ORIGINS = config(
+    'CSRF_TRUSTED_ORIGINS',
+    default='https://tunivisions-iset-kairouan.onrender.com',
+    cast=Csv(),
+)
 
 # Application definition
 INSTALLED_APPS = [
@@ -34,6 +48,7 @@ INSTALLED_APPS = [
     'dashboard',
     'projects',
     'assistant',
+    'business_development',
 ]
 
 MIDDLEWARE = [
@@ -59,6 +74,7 @@ TEMPLATES = [
                 'django.template.context_processors.request',
                 'django.contrib.auth.context_processors.auth',
                 'django.contrib.messages.context_processors.messages',
+                'dashboard.context_processors.footer_settings',
             ],
         },
     },

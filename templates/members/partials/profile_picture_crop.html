@@ -1,0 +1,13 @@
+{% load static %}
+<div class="tv-profile-crop" data-profile-crop>
+    <div class="tv-profile-crop-stage" data-crop-stage aria-label="Zone de recadrage carrée">
+        <img class="tv-profile-crop-image" data-crop-image alt="Aperçu du recadrage">
+        <span class="tv-profile-crop-hint">Déplacez la photo pour choisir le cadrage</span>
+    </div>
+    <label class="tv-profile-crop-zoom">
+        Zoom
+        <input type="range" min="1" max="3" value="1.15" step="0.01" data-crop-zoom aria-label="Zoom de la photo">
+    </label>
+    <p class="tv-profile-crop-status" data-crop-status aria-live="polite">Choisissez une photo pour la recadrer avant l’enregistrement.</p>
+</div>
+<script src="{% static 'tunivisions/js/profile-picture-crop.js' %}?v=20261003-1" defer></script>

@@ -10,6 +10,7 @@ db.sqlite3-journal
 /staticfiles
 .env
 .env.local
+.env.production
 .env.*.local
 
 # Virtual Environment

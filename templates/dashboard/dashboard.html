@@ -1,11 +1,11 @@
 {% extends "base.html" %}
+{% load custom_filters %}
 
-{% block title %}Dashboard - AI Club{% endblock %}
+{% block title %}Dashboard - Tunivisions Kairouan{% endblock %}
+{% block page_heading %}Dashboard{% endblock %}
 
 {% block content %}
-<h1 class="page-title">
-    <i class="fas fa-chart-line"></i> Dashboard
-</h1>
+<div class="dashboard-intro"><p class="eyebrow">Tunivisions Kairouan</p><h1 class="page-title mb-1">Bienvenue dans votre espace club</h1><p class="text-muted mb-0">Coordonnez les projets, les événements et les actions qui font vivre la communauté.</p></div>
 
 <!-- Stats Cards -->
 {% if user.is_bureau %}
@@ -16,9 +16,9 @@
                 <div class="d-flex justify-content-between align-items-center">
                     <div>
                         <p class="text-muted mb-1">Total Members</p>
-                        <h3 class="mb-0" style="color: #1e88e5; font-weight: 700;">{{ total_members }}</h3>
+                        <h3 class="mb-0" style="color: var(--tv-red); font-weight: 700;">{{ total_members }}</h3>
                     </div>
-                    <i class="fas fa-users fa-3x" style="color: #e3f2fd;"></i>
+                    <i class="fas fa-users fa-3x" style="color: var(--tv-red-soft);"></i>
                 </div>
             </div>
         </div>
@@ -29,10 +29,10 @@
             <div class="card-body">
                 <div class="d-flex justify-content-between align-items-center">
                     <div>
-                        <p class="text-muted mb-1">Active Events</p>
-                        <h3 class="mb-0" style="color: #43a047; font-weight: 700;">{{ total_events }}</h3>
+                        <p class="text-muted mb-1">Total Events</p>
+                        <h3 class="mb-0" style="color: var(--tv-red-dark); font-weight: 700;">{{ total_events }}</h3>
                     </div>
-                    <i class="fas fa-calendar-alt fa-3x" style="color: #e8f5e9;"></i>
+                    <i class="fas fa-calendar-alt fa-3x" style="color: var(--tv-red-soft);"></i>
                 </div>
             </div>
         </div>
@@ -44,9 +44,9 @@
                 <div class="d-flex justify-content-between align-items-center">
                     <div>
                         <p class="text-muted mb-1">Total Registrations</p>
-                        <h3 class="mb-0" style="color: #fb8c00; font-weight: 700;">{{ total_registrations }}</h3>
+                        <h3 class="mb-0" style="color: var(--tv-muted); font-weight: 700;">{{ total_registrations }}</h3>
                     </div>
-                    <i class="fas fa-check-circle fa-3x" style="color: #fff3e0;"></i>
+                    <i class="fas fa-check-circle fa-3x" style="color: var(--tv-border);"></i>
                 </div>
             </div>
         </div>
@@ -55,15 +55,15 @@
 
 <style>
     .border-left-primary {
-        border-left: 4px solid #1e88e5 !important;
+        border-left: 4px solid var(--tv-red) !important;
     }
 
     .border-left-success {
-        border-left: 4px solid #43a047 !important;
+        border-left: 4px solid var(--tv-red-dark) !important;
     }
 
     .border-left-warning {
-        border-left: 4px solid #fb8c00 !important;
+        border-left: 4px solid var(--tv-border) !important;
     }
 </style>
 
@@ -75,49 +75,96 @@
                 <h5 class="mb-0"><i class="fas fa-bolt"></i> Quick Actions</h5>
             </div>
             <div class="card-body">
-                <div class="d-flex gap-2 flex-wrap">
-                    <a href="{% url 'event_list' %}" class="btn btn-primary">
+                <div class="row g-3">
+                    {% if user|can_access:"events.view" %}
+                    <a href="{% url 'event_list' %}" class="action-card col-md-4">
                         <i class="fas fa-calendar"></i> View Events
+                        <small>Consulter les prochains rendez-vous du club.</small>
                     </a>
-                    <a href="{% url 'announcement_list' %}" class="btn btn-success">
+                    {% endif %}
+                    {% if user|can_access:"announcements.view" %}
+                    <a href="{% url 'announcement_list' %}" class="action-card col-md-4">
                         <i class="fas fa-bell"></i> View Announcements
+                        <small>Retrouver les communications publiées.</small>
                     </a>
-                    <a href="{% url 'assistant:chat' %}" class="btn btn-info">
+                    {% endif %}
+                    {% if user|can_access:"assistant.use" %}
+                    <a href="{% url 'assistant:chat' %}" class="action-card col-md-4">
                         <i class="fas fa-comments"></i> Chat Personnel
+                        <small>Obtenir une réponse et retrouver vos échanges.</small>
                     </a>
-                    {% if user.role == 'owner' or user.role == 'president' %}
-                    <a href="{% url 'activity_history' %}" class="btn btn-info">
+                    {% endif %}
+                    {% if user|can_access:"history.view" %}
+                    <a href="{% url 'activity_history' %}" class="action-card col-md-4">
                         <i class="fas fa-history"></i> View History
+                        <small>Suivre l'activité de la plateforme.</small>
                     </a>
                     {% endif %}
-                    {% if perms.accounts.change_user %}
-                    <!-- Replaced by specific Manage Roles on Member Profile -->
+
+                    {% if user|can_access:"bd.manage" %}
+                    <a href="{% url 'business_development:partner_create' %}" class="action-card col-md-4">
+                        <i class="fas fa-handshake"></i> Add Partner
+                        <small>Enregistrer un nouveau partenaire.</small>
+                    </a>
+                    <a href="{% url 'business_development:prospect_create' %}" class="action-card col-md-4">
+                        <i class="fas fa-crosshairs"></i> Add Prospect
+                        <small>Ajouter un contact à suivre.</small>
+                    </a>
+                    <a href="{% url 'business_development:opportunity_create' %}" class="action-card col-md-4">
+                        <i class="fas fa-chart-line"></i> Create Opportunity
+                        <small>Structurer une opportunité BD.</small>
+                    </a>
+                    {% endif %}
+                    {% if user|can_access:"bd.interact" %}
+                    <a href="{% url 'business_development:interaction_create' %}" class="action-card col-md-4">
+                        <i class="fas fa-comments"></i> Add Interaction
+                        <small>Journaliser un échange avec un contact.</small>
+                    </a>
                     {% endif %}
 
-                    {% if perms.events.add_event %}
-                    <a href="{% url 'create_event' %}" class="btn btn-info">
+                    {% if user|can_access:"events.create" %}
+                    <a href="{% url 'create_event' %}" class="action-card col-md-4">
                         <i class="fas fa-plus"></i> Create Event
+                        <small>Créer et planifier un nouvel événement.</small>
                     </a>
                     {% endif %}
 
-                    {% if user.role == 'owner' or user.role == 'president' %}
-                    <a href="{% url 'pending_members' %}" class="btn btn-primary">
+                    {% if user|can_access:"members.approve" %}
+                    <a href="{% url 'pending_members' %}" class="action-card col-md-4">
                         <i class="fas fa-user-clock"></i> Approve Members
+                        <small>Gérer les demandes d'adhésion.</small>
                     </a>
-                    <a href="{% url 'pending_announcements' %}" class="btn btn-warning">
+                    {% endif %}
+                    {% if user|can_access:"announcements.approve" %}
+                    <a href="{% url 'pending_announcements' %}" class="action-card col-md-4">
                         <i class="fas fa-bullhorn"></i> Approve Announcements
+                        <small>Valider les communications soumises.</small>
                     </a>
                     {% endif %}
 
-                    {% if perms.announcements.add_announcement %}
-                    <a href="{% url 'create_announcement' %}" class="btn btn-warning">
+                    {% if user|can_access:"announcements.create" %}
+                    <a href="{% url 'create_announcement' %}" class="action-card col-md-4">
                         <i class="fas fa-plus"></i> Create Announcement
+                        <small>Publier une nouvelle communication.</small>
                     </a>
                     {% endif %}
 
-                    {% if perms.accounts.view_user %}
-                    <a href="{% url 'member_list' %}" class="btn btn-secondary">
+                    {% if user|can_access:"members.view" %}
+                    <a href="{% url 'member_list' %}" class="action-card col-md-4">
                         <i class="fas fa-users"></i> View Members
+                        <small>Consulter les membres du club.</small>
+                    </a>
+                    {% endif %}
+                    {% if user|can_access:"members.roles.manage" %}
+                    <a href="{% url 'manage_member_roles' %}" class="action-card col-md-4">
+                        <i class="fas fa-user-tag"></i> Gestion des rôles
+                        <small>Gérer les rôles fonctionnels des membres.</small>
+                    </a>
+                    {% endif %}
+                    {% if user|can_access:"bureau.messages.view" %}
+                    <a href="{% url 'bureau_messages' %}" class="action-card col-md-4">
+                        <i class="fas fa-inbox"></i> Messages du bureau
+                        <small>Consulter les messages adressés à vos fonctions.</small>
                     </a>
                     {% endif %}
                 </div>
@@ -171,43 +218,43 @@
             </div>
             <div class="card-body">
                 <div class="list-group list-group-flush">
-                    {% if user.is_superuser %} <!-- Owner/President -->
+                    {% if user|can_access:"admin.access" %}
                     <div class="list-group-item">
                         <i class="fas fa-crown text-warning"></i> <strong>Full Admin Access</strong>
                     </div>
                     {% endif %}
 
-                    {% if perms.accounts.view_user %}
+                    {% if user|can_access:"members.view" %}
                     <div class="list-group-item">
                         <i class="fas fa-check text-success"></i> View Members
                     </div>
                     {% endif %}
 
-                    {% if perms.accounts.change_user %}
+                    {% if user|can_access:"members.manage" %}
                     <div class="list-group-item">
                         <i class="fas fa-check text-success"></i> Manage Members (Edit)
                     </div>
                     {% endif %}
 
-                    {% if perms.events.add_event %}
+                    {% if user|can_access:"events.create" %}
                     <div class="list-group-item">
                         <i class="fas fa-check text-success"></i> Create Events
                     </div>
                     {% endif %}
 
-                    {% if perms.events.change_event %}
+                    {% if user|can_access:"events.edit" %}
                     <div class="list-group-item">
                         <i class="fas fa-check text-success"></i> Manage Events
                     </div>
                     {% endif %}
 
-                    {% if perms.announcements.add_announcement %}
+                    {% if user|can_access:"announcements.create" %}
                     <div class="list-group-item">
                         <i class="fas fa-check text-success"></i> Create Announcements
                     </div>
                     {% endif %}
 
-                    {% if perms.projects.add_project %}
+                    {% if user|can_access:"projects.create" %}
                     <div class="list-group-item">
                         <i class="fas fa-check text-success"></i> Create Projects
                     </div>
@@ -225,27 +272,70 @@
 {% else %}
 <!-- Welcome Message for Regular Members -->
 <div class="card mb-4">
+    <div class="card-header"><h5 class="mb-0"><i class="fas fa-bolt"></i> Quick Actions</h5></div>
+    <div class="card-body d-flex gap-2 flex-wrap">
+        {% if user|can_access:"events.view" %}<a href="{% url 'event_list' %}" class="btn btn-primary"><i class="fas fa-calendar"></i> View Events</a>{% endif %}
+        {% if user|can_access:"announcements.view" %}<a href="{% url 'announcement_list' %}" class="btn btn-outline-primary"><i class="fas fa-bell"></i> View Announcements</a>{% endif %}
+        {% if user|can_access:"assistant.use" %}<a href="{% url 'assistant:chat' %}" class="btn btn-outline-primary"><i class="fas fa-comments"></i> Chat Personnel</a>{% endif %}
+        {% if user|can_access:"bureau.messages.send" %}<a href="{% url 'contact_bureau' %}" class="btn btn-primary"><i class="fas fa-paper-plane"></i> Contacter le bureau</a>{% endif %}
+    </div>
+</div>
+<div class="card mb-4">
     <div class="card-body text-center py-5">
         <h4 class="mb-2">Welcome, {{ user.first_name|default:user.username }}!</h4>
         <p class="text-muted mb-0">Explore upcoming events and announcements below.</p>
     </div>
 </div>
 
-<!-- Featured Events -->
-<div class="row">
-    <div class="col-12">
-        <h5 class="mb-3"><i class="fas fa-calendar"></i> Upcoming Events</h5>
-        <a href="{% url 'event_list' %}" class="btn btn-primary btn-sm mb-3">View All Events</a>
-    </div>
-</div>
+{% endif %}
 
-<!-- Featured Announcements -->
-<div class="row mt-4">
-    <div class="col-12">
-        <h5 class="mb-3"><i class="fas fa-bell"></i> Latest Announcements</h5>
-        <a href="{% url 'announcement_list' %}" class="btn btn-success btn-sm mb-3">View All Announcements</a>
+{% if user|can_access:"events.view" %}
+<section class="mb-4" aria-labelledby="dashboard-events-heading">
+    <div class="d-flex justify-content-between align-items-center mb-3">
+        <h2 id="dashboard-events-heading" class="page-title h4 mb-0">{{ event_section_title }}</h2>
+        <a href="{% url 'event_list' %}" class="btn btn-outline-primary btn-sm">Tous les événements</a>
     </div>
-</div>
+    <div class="row g-3">
+        {% for event in dashboard_events %}
+        <div class="col-md-6 col-xl-4">
+            <article class="card h-100">
+                <div class="card-body">
+                    <h3 class="h5"><a class="text-decoration-none" href="{% url 'event_detail' event.pk %}">{{ event.title }}</a></h3>
+                    <p class="text-muted mb-2"><i class="fas fa-calendar-days"></i> {{ event.date|date:"d/m/Y H:i" }}</p>
+                    <p class="text-muted mb-2"><i class="fas fa-location-dot"></i> {{ event.location }}</p>
+                    <p class="mb-0">{{ event.description|truncatewords:20 }}</p>
+                </div>
+            </article>
+        </div>
+        {% empty %}
+        <div class="col-12"><p class="text-muted">Aucun événement à afficher.</p></div>
+        {% endfor %}
+    </div>
+</section>
+{% endif %}
+
+{% if user|can_access:"announcements.view" %}
+<section class="mb-4" aria-labelledby="dashboard-announcements-heading">
+    <div class="d-flex justify-content-between align-items-center mb-3">
+        <h2 id="dashboard-announcements-heading" class="page-title h4 mb-0">Dernières annonces</h2>
+        <a href="{% url 'announcement_list' %}" class="btn btn-outline-primary btn-sm">Toutes les annonces</a>
+    </div>
+    <div class="row g-3">
+        {% for announcement in dashboard_announcements %}
+        <div class="col-md-6 col-xl-4">
+            <article class="card h-100">
+                <div class="card-body">
+                    <h3 class="h5"><a class="text-decoration-none" href="{% url 'announcement_list' %}#announcement-{{ announcement.pk }}">{{ announcement.title }}</a></h3>
+                    <p class="text-muted mb-2"><i class="fas fa-calendar-days"></i> {{ announcement.created_at|date:"d/m/Y H:i" }}</p>
+                    <p class="mb-0">{{ announcement.content|truncatewords:24 }}</p>
+                </div>
+            </article>
+        </div>
+        {% empty %}
+        <div class="col-12"><p class="text-muted">Aucune annonce publiée.</p></div>
+        {% endfor %}
+    </div>
+</section>
 {% endif %}
 
 {% endblock %}

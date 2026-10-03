@@ -33,7 +33,7 @@ class Command(BaseCommand):
             },
             {
                 'question': 'Comment contactez les responsables?',
-                'answer': '📧 Vous pouvez nous contacter de plusieurs façons:\n• Par email: contact@aiclub.com\n• Via les réseaux sociaux du club\n• En visitant notre bureau pendant les heures de permanence\n\nLes responsables sont généralement disponibles pour répondre à vos questions!',
+                'answer': '📧 Vous pouvez nous contacter de plusieurs façons:\n• Par email: contact@tunivisions-kairouan.tn\n• Via les réseaux sociaux du club\n• En visitant notre bureau pendant les heures de permanence\n\nLes responsables sont généralement disponibles pour répondre à vos questions!',
                 'keywords': 'contact, email, responsable, directeur, adresse, téléphone',
                 'category': 'general'
             },

@@ -1,11 +1,11 @@
 {% extends "base.html" %}
 
-{% block title %}Members - AI Club{% endblock %}
+{% block title %}Membres - Tunivisions Kairouan{% endblock %}
 
 {% block content %}
 <div class="container my-5">
     <h1 class="page-title mb-4">
-        <i class="fas fa-users"></i> Club Members ({{ total_members }})
+        <i class="fas fa-users"></i> Membres du club ({{ total_members }})
     </h1>
 
     <!-- Search Bar -->
@@ -31,14 +31,10 @@
                 <div class="card shadow-lg h-100">
                     <div class="card-body text-center">
                         <!-- Profile Picture -->
-                        {% if member.profile_picture %}
-                            <img src="{{ member.profile_picture.url }}" alt="{{ member.username }}" 
-                                 style="width: 100px; height: 100px; border-radius: 50%; object-fit: cover; margin-bottom: 1rem; border: 3px solid #0d47a1;">
-                        {% else %}
-                            <div style="width: 100px; height: 100px; border-radius: 50%; background: linear-gradient(135deg, #0d47a1 0%, #1e88e5 100%); display: flex; align-items: center; justify-content: center; margin: 0 auto 1rem; font-size: 2rem; color: white;">
-                                <i class="fas fa-user"></i>
-                            </div>
-                        {% endif %}
+                        <span class="tv-avatar-frame tv-avatar-md mb-3">
+                            {% if member.profile_picture %}<img class="tv-avatar-image" src="{{ member.profile_picture.url }}" alt="{{ member.username }}">
+                            {% else %}<span class="tv-avatar-placeholder"><i class="fas fa-user"></i></span>{% endif %}
+                        </span>
 
                         <!-- Member Info -->
                         <h5 class="card-title">{{ member.get_full_name|default:member.username }}</h5>
@@ -46,7 +42,7 @@
                         
                         <!-- Role Badge -->
                         <div class="mb-2">
-                            <span class="badge bg-primary">{{ member.role }}</span>
+                            <span class="badge bg-primary">{{ member.get_role_display }}</span>
                         </div>
 
                         <!-- Skills -->

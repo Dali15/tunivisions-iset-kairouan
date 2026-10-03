@@ -2,7 +2,6 @@ from django.shortcuts import render, redirect
 from django.contrib.auth.decorators import login_required
 from django.db.models import Q
 from .models import Announcement
-from accounts.decorators import roles_required
 from .forms import AnnouncementForm
 
 from django.contrib import messages
@@ -10,6 +9,8 @@ from django.shortcuts import get_object_or_404
 
 import traceback
 from django.http import HttpResponse
+from django.views.decorators.http import require_http_methods, require_POST
+from accounts.decorators import permission_required
 
 import traceback
 from django.http import HttpResponse
@@ -37,7 +38,7 @@ def announcement_list(request):
         context = {
             'announcements': announcements,
             'search_query': search_query,
-            'can_review': request.user.is_authenticated and request.user.role in ['owner', 'president'],
+            'can_review': request.user.can_access('announcements.approve'),
             'my_pending': my_pending,
         }
         return render(request, 'announcements/announcement_list.html', context)
@@ -46,7 +47,8 @@ def announcement_list(request):
         return HttpResponse(f"<h1>Debug Error</h1><pre>{error_info}</pre>", status=500)
 
 @login_required
-@roles_required(['owner', 'president', 'vice_president', 'media', 'hr', 'partnerships', 'secretary', 'treasurer'])
+@permission_required('announcements.create')
+@require_http_methods(['GET', 'POST'])
 def create_announcement(request):
     """
     Create a new announcement. 
@@ -60,7 +62,7 @@ def create_announcement(request):
             announcement.author = request.user
             
             # Auto-approve for Top Admins
-            if request.user.role in ['owner', 'president']:
+            if request.user.can_access('announcements.approve'):
                 announcement.is_approved = True
                 message = "Announcement published successfully!"
             else:
@@ -78,7 +80,7 @@ def create_announcement(request):
 @login_required
 def pending_announcements(request):
     """Interface for President to accept/reject announcements."""
-    if request.user.role not in ['owner', 'president']:
+    if not request.user.can_access('announcements.approve'):
         messages.error(request, "Access denied.")
         return redirect('announcement_list')
         
@@ -87,11 +89,10 @@ def pending_announcements(request):
     return render(request, 'announcements/pending_announcements.html', {'pending_announcements': pending})
 
 @login_required
+@permission_required('announcements.approve')
+@require_POST
 def approve_announcement(request, pk):
     """Approve execution."""
-    if request.user.role not in ['owner', 'president']:
-         return redirect('announcement_list')
-         
     announcement = get_object_or_404(Announcement, pk=pk)
     announcement.is_approved = True
     announcement.save()
@@ -99,11 +100,10 @@ def approve_announcement(request, pk):
     return redirect('pending_announcements')
 
 @login_required
+@permission_required('announcements.approve')
+@require_POST
 def reject_announcement(request, pk):
     """Reject execution."""
-    if request.user.role not in ['owner', 'president']:
-         return redirect('announcement_list')
-         
     announcement = get_object_or_404(Announcement, pk=pk)
     announcement.delete() # Or set status='rejected' if we had a status field. For now delete.
     messages.success(request, f"Announcement '{announcement.title}' rejected (deleted).")

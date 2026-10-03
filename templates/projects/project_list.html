@@ -1,6 +1,7 @@
 {% extends "base.html" %}
+{% load custom_filters %}
 
-{% block title %}Projects - AI Club{% endblock %}
+{% block title %}Projets - Tunivisions Kairouan{% endblock %}
 
 {% block content %}
 <div class="container my-5">
@@ -10,7 +11,7 @@
             <p class="text-muted">Collaborate on exciting AI projects - View code, resources, and progress</p>
         </div>
         <div class="col-md-4 text-end">
-            {% if user.is_authenticated and user.is_bureau %}
+            {% if user|can_access:"projects.create" %}
                 <a href="{% url 'create_project' %}" class="btn btn-primary">
                     <i class="fas fa-plus"></i> Create Project
                 </a>
@@ -86,7 +87,7 @@
         </div>
     {% else %}
         <div class="alert alert-info">
-            <i class="fas fa-info-circle"></i> No projects found. {% if user.is_authenticated and user.is_bureau %}<a href="{% url 'create_project' %}">Create the first one!</a>{% endif %}
+            <i class="fas fa-info-circle"></i> No projects found. {% if user|can_access:"projects.create" %}<a href="{% url 'create_project' %}">Create the first one!</a>{% endif %}
         </div>
     {% endif %}
 </div>

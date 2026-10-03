@@ -1,15 +1,26 @@
-from django.shortcuts import render, redirect
+from django.contrib import messages
+from django.shortcuts import get_object_or_404, render, redirect
 from django.contrib.auth.decorators import login_required
-from django.contrib.admin.views.decorators import staff_member_required
 from django.core.paginator import Paginator
 from django.db.models import Q
 from django.http import JsonResponse
-from django.views.decorators.http import require_http_methods
-from members.models import Member
+from django.utils import timezone
+from django.views.decorators.http import require_http_methods, require_POST
 from events.models import Event, EventRegistration
-from dashboard.models import ActivityLog
+from dashboard.models import ActivityLog, BureauMessage, FooterSettings
 from dashboard.role_permissions import ROLE_PERMISSIONS, ALL_AVAILABLE_PERMISSIONS
 from accounts.models import User as CustomUser
+from accounts.rbac import (
+    BUREAU_MESSAGE_RECIPIENT_ROLES,
+    ROLE_LABELS,
+    has_functional_role,
+    has_role_permission,
+    role_label,
+)
+from accounts.decorators import permission_required
+from business_development.models import Interaction, Opportunity, Partner, Prospect
+from announcements.models import Announcement
+from .forms import BureauMessageForm, FooterSettingsForm
 
 
 def home_view(request):
@@ -18,7 +29,7 @@ def home_view(request):
     
     if request.user.is_authenticated:
         context.update({
-            'total_members': Member.objects.count(),
+            'total_members': CustomUser.objects.filter(is_active=True).count(),
             'total_events': Event.objects.count(),
             'total_registrations': EventRegistration.objects.count(),
         })
@@ -29,20 +40,64 @@ def home_view(request):
 @login_required
 def dashboard_view(request):
     """Display dashboard with statistics for authorized users."""
-    context = {'role': request.user.role}
+    role = request.user.role
+    context = {'role': role, 'role_label': role_label(role)}
 
     # Show statistics for bureau members and admins
     if request.user.is_bureau():
         context.update({
-            'total_members': Member.objects.count(),
+            'total_members': CustomUser.objects.filter(is_active=True).count(),
             'total_events': Event.objects.count(),
             'total_registrations': EventRegistration.objects.count(),
         })
 
+    if has_role_permission(request.user, 'events.view'):
+        upcoming_events = Event.objects.filter(date__gte=timezone.now()).order_by('date')
+        has_upcoming_events = upcoming_events.exists()
+        if not has_upcoming_events:
+            upcoming_events = Event.objects.order_by('-date')
+        context['dashboard_events'] = upcoming_events[:5]
+        context['event_section_title'] = (
+            'Événements à venir' if has_upcoming_events else 'Événements récents'
+        )
+
+    if has_role_permission(request.user, 'announcements.view'):
+        context['dashboard_announcements'] = Announcement.objects.filter(
+            is_approved=True
+        ).order_by('-created_at')[:5]
+
+    context.update({
+        'bd_stats': {
+            'prospects': Prospect.objects.count(),
+            'partners': Partner.objects.filter(status='partner').count(),
+            'opportunities': Opportunity.objects.exclude(status__in=['won', 'lost']).count(),
+            'interactions': Interaction.objects.count(),
+        } if has_role_permission(request.user, 'bd.view') else None,
+    })
+
     return render(request, 'dashboard/dashboard.html', context)
 
 
-@staff_member_required
+@login_required
+@permission_required('members.roles.manage')
+@require_http_methods(['GET', 'POST'])
+def footer_settings_view(request):
+    try:
+        footer_settings = FooterSettings.objects.get(pk=1)
+    except FooterSettings.DoesNotExist:
+        footer_settings = FooterSettings(pk=1)
+    if request.method == 'POST':
+        form = FooterSettingsForm(request.POST, instance=footer_settings)
+        if form.is_valid():
+            form.save()
+            messages.success(request, 'Les informations du pied de page ont été enregistrées.')
+            return redirect('footer_settings')
+    else:
+        form = FooterSettingsForm(instance=footer_settings)
+    return render(request, 'dashboard/footer_settings.html', {'form': form})
+
+
+@permission_required('history.view')
 def activity_history_view(request):
     """Display full activity history - Admin only"""
     query = request.GET.get('q', '')
@@ -192,29 +247,113 @@ def view_role_permissions_view(request, role=None):
     return render(request, 'dashboard/view_role_permissions.html', context)
 
 
-@staff_member_required
+@login_required
+@permission_required('members.roles.manage')
 def manage_member_roles_view(request):
-    """Admin page to search and manage roles for all members."""
+    """List every account for the President's functional role management."""
     search_query = request.GET.get('search', '').strip()
-
-    # Get all members or filter by search
+    members = CustomUser.objects.all()
     if search_query:
-        members = Member.objects.filter(
-            Q(user__first_name__icontains=search_query) |
-            Q(user__last_name__icontains=search_query) |
-            Q(user__username__icontains=search_query) |
-            Q(user__email__icontains=search_query)
-        ).select_related('user').order_by('user__first_name', 'user__last_name')
-    else:
-        members = Member.objects.all().select_related('user').order_by('user__first_name', 'user__last_name')
-
-    # Get role choices from the Member model
-    role_choices = Member.ROLE_CHOICES
+        members = members.filter(
+            Q(first_name__icontains=search_query)
+            | Q(last_name__icontains=search_query)
+            | Q(username__icontains=search_query)
+            | Q(email__icontains=search_query)
+        )
 
     context = {
-        'members': members,
-        'role_choices': role_choices,
+        'members': members.order_by('first_name', 'last_name', 'username'),
+        'role_choices': ROLE_LABELS.items(),
         'search_query': search_query,
     }
-
     return render(request, 'admin/manage_member_roles.html', context)
+
+
+@login_required
+@permission_required('members.roles.manage')
+@require_POST
+def update_member_role_view(request, user_id):
+    """Change only the functional role; Django staff flags remain untouched."""
+    target_user = get_object_or_404(CustomUser, pk=user_id)
+    new_role = request.POST.get('role', '')
+    if target_user.is_superuser:
+        messages.error(request, "Le rôle fonctionnel d'un superuser ne peut pas être modifié ici.")
+    elif new_role not in ROLE_LABELS:
+        messages.error(request, "Le rôle sélectionné est invalide.")
+    else:
+        old_role = target_user.role
+        CustomUser.objects.filter(pk=target_user.pk).update(role=new_role)
+        ActivityLog.objects.create(
+            user=request.user,
+            action='update',
+            content_type='User',
+            object_id=target_user.pk,
+            object_name=target_user.get_full_name() or target_user.username,
+            old_value=role_label(old_role),
+            new_value=ROLE_LABELS[new_role],
+        )
+        messages.success(
+            request,
+            f"Le rôle de {target_user.get_full_name() or target_user.username} "
+            f"a été modifié : {ROLE_LABELS[new_role]}.",
+        )
+    return redirect('manage_member_roles')
+
+
+def _bureau_message_inbox(user):
+    if has_role_permission(user, 'bureau.messages.view_all'):
+        return BureauMessage.objects.select_related('sender').all()
+
+    recipient_roles = []
+    for key, (_, roles) in BUREAU_MESSAGE_RECIPIENT_ROLES.items():
+        if has_functional_role(user, roles):
+            recipient_roles.append(key)
+    return BureauMessage.objects.select_related('sender').filter(
+        recipient_role__in=recipient_roles
+    )
+
+
+@login_required
+@permission_required('bureau.messages.send')
+def contact_bureau_view(request):
+    sent_messages = BureauMessage.objects.filter(sender=request.user)
+    if request.method == 'POST':
+        form = BureauMessageForm(request.POST)
+        if form.is_valid():
+            bureau_message = form.save(commit=False)
+            bureau_message.sender = request.user
+            bureau_message.save()
+            messages.success(request, "Votre message a bien été envoyé au bureau.")
+            return redirect('contact_bureau')
+    else:
+        form = BureauMessageForm()
+    return render(
+        request,
+        'dashboard/contact_bureau.html',
+        {'form': form, 'sent_messages': sent_messages},
+    )
+
+
+@login_required
+@permission_required('bureau.messages.view')
+def bureau_messages_view(request):
+    return render(
+        request,
+        'dashboard/bureau_messages.html',
+        {'bureau_messages': _bureau_message_inbox(request.user)},
+    )
+
+
+@login_required
+@permission_required('bureau.messages.view')
+@require_POST
+def mark_bureau_message_read_view(request, message_id):
+    bureau_message = get_object_or_404(
+        _bureau_message_inbox(request.user),
+        pk=message_id,
+    )
+    if not bureau_message.is_read:
+        bureau_message.is_read = True
+        bureau_message.save(update_fields=['is_read'])
+    messages.success(request, "Le message a été marqué comme lu.")
+    return redirect('bureau_messages')

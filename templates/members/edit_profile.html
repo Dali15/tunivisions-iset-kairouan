@@ -1,6 +1,7 @@
 {% extends "base.html" %}
+{% load static %}
 
-{% block title %}Edit Profile - AI Club{% endblock %}
+{% block title %}Modifier le profil - Tunivisions Kairouan{% endblock %}
 
 {% block content %}
 <div class="container my-5">
@@ -30,14 +31,15 @@
                         <!-- Profile Picture -->
                         <div class="mb-4 text-center">
                             <label class="form-label"><i class="fas fa-image"></i> Profile Picture</label>
-                            {% if member.profile_picture %}
-                                <div class="mb-3">
-                                    <img src="{{ member.profile_picture.url }}" alt="{{ member.username }}" 
-                                         style="width: 150px; height: 150px; border-radius: 50%; object-fit: cover; border: 3px solid #0d47a1;">
-                                </div>
-                            {% endif %}
-                            <input type="file" name="profile_picture" class="form-control" accept="image/*">
+                            <div class="mb-3">
+                                <span class="tv-avatar-frame tv-avatar-lg">
+                                    {% if member.profile_picture %}<img class="tv-avatar-image" src="{{ member.profile_picture.url }}" alt="{{ member.username }}">
+                                    {% else %}<span class="tv-avatar-placeholder"><i class="fas fa-user"></i></span>{% endif %}
+                                </span>
+                            </div>
+                            <input type="file" name="profile_picture" id="id_profile_picture" class="form-control" accept="image/*">
                             <small class="text-muted">JPG, PNG, or GIF. Max 5MB.</small>
+                            {% include "members/partials/profile_picture_crop.html" %}
                         </div>
 
                         <!-- Bio -->

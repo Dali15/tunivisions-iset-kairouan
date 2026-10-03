@@ -1,4 +1,4 @@
-# 🤖 AI Club - AI Assistant Chat Platform
+# Tunivisions Kairouan - Plateforme de gestion du club
 
 > A professional Django web application for AI communities with personal chat assistant, event management, and member profiles. **Production-ready. Fully documented. Deploy in minutes.**
 

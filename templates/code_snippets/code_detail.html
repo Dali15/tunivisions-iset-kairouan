@@ -1,6 +1,6 @@
 {% extends "base.html" %}
 
-{% block title %}{{ snippet.title }} - AI Club{% endblock %}
+{% block title %}{{ snippet.title }} - Tunivisions Kairouan{% endblock %}
 
 {% block content %}
 <div class="container my-5">
@@ -33,7 +33,7 @@
                     </div>
 
                     <!-- Metadata -->
-                    <div class="alert alert-light border-left" style="border-left: 4px solid #0d47a1;">
+                    <div class="alert alert-light border-left" style="border-left: 4px solid var(--tv-red);">
                         <strong>Shared by:</strong> {{ snippet.created_by.get_full_name|default:snippet.created_by.username }}<br>
                         <strong>Date:</strong> {{ snippet.created_at|date:"M d, Y H:i" }}<br>
                         <small>Last updated: {{ snippet.updated_at|date:"M d, Y H:i" }}</small>

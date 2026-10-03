@@ -1,12 +1,12 @@
 {% extends "base.html" %}
 
-{% block title %}Home - AI Club Management System{% endblock %}
+{% block title %}Accueil - Tunivisions Kairouan{% endblock %}
 
 {% block content %}
 <!-- Hero Section -->
-<div style="background: linear-gradient(135deg, #0d47a1 0%, #1e88e5 100%); color: white; padding: 4rem 2rem; border-radius: 12px; text-align: center; margin-bottom: 3rem;">
+<div style="background: var(--tv-red-dark); color: white; padding: 4rem 2rem; border-radius: 12px; text-align: center; margin-bottom: 3rem;">
     <h1 style="font-size: 3rem; font-weight: 700; margin-bottom: 1rem;">
-        <i class="fas fa-brain"></i> Welcome to AI Club
+        <i class="fas fa-star"></i> Bienvenue à Tunivisions Kairouan
     </h1>
     <p style="font-size: 1.25rem; margin-bottom: 2rem; opacity: 0.95;">
         Professional Platform for Managing Club Activities, Events, and Community
@@ -28,7 +28,7 @@
     <div class="col-md-4 mb-3">
         <div class="card">
             <div class="card-body text-center">
-                <i class="fas fa-calendar fa-3x mb-3" style="color: #1e88e5;"></i>
+                <i class="fas fa-calendar fa-3x mb-3" style="color: var(--tv-red);"></i>
                 <h5 class="card-title">Upcoming Events</h5>
                 <p class="card-text text-muted">Stay updated with club activities</p>
                 <a href="{% url 'event_list' %}" class="btn btn-primary btn-sm">
@@ -41,7 +41,7 @@
     <div class="col-md-4 mb-3">
         <div class="card">
             <div class="card-body text-center">
-                <i class="fas fa-bell fa-3x mb-3" style="color: #43a047;"></i>
+                <i class="fas fa-bell fa-3x mb-3" style="color: var(--tv-red);"></i>
                 <h5 class="card-title">Announcements</h5>
                 <p class="card-text text-muted">Latest news and updates</p>
                 <a href="{% url 'announcement_list' %}" class="btn btn-primary btn-sm">
@@ -54,7 +54,7 @@
     <div class="col-md-4 mb-3">
         <div class="card">
             <div class="card-body text-center">
-                <i class="fas fa-users fa-3x mb-3" style="color: #fb8c00;"></i>
+                <i class="fas fa-users fa-3x mb-3" style="color: var(--tv-red);"></i>
                 <h5 class="card-title">Community</h5>
                 <p class="card-text text-muted">Connect with members</p>
                 <a href="{% url 'dashboard' %}" class="btn btn-primary btn-sm">
@@ -75,15 +75,15 @@
             <div class="card-body">
                 <div class="row text-center">
                     <div class="col-md-4 mb-3 mb-md-0">
-                        <h3 style="color: #1e88e5; font-weight: 700;">{{ total_members|default:0 }}</h3>
+                        <h3 style="color: var(--tv-red); font-weight: 700;">{{ total_members|default:0 }}</h3>
                         <p class="text-muted">Active Members</p>
                     </div>
                     <div class="col-md-4 mb-3 mb-md-0">
-                        <h3 style="color: #43a047; font-weight: 700;">{{ total_events|default:0 }}</h3>
+                        <h3 style="color: var(--tv-red); font-weight: 700;">{{ total_events|default:0 }}</h3>
                         <p class="text-muted">Events Organized</p>
                     </div>
                     <div class="col-md-4">
-                        <h3 style="color: #fb8c00; font-weight: 700;">{{ total_registrations|default:0 }}</h3>
+                        <h3 style="color: var(--tv-red); font-weight: 700;">{{ total_registrations|default:0 }}</h3>
                         <p class="text-muted">Event Registrations</p>
                     </div>
                 </div>
@@ -102,7 +102,7 @@
     <div class="col-md-6 mb-3">
         <div class="card h-100">
             <div class="card-body">
-                <i class="fas fa-calendar-check fa-2x mb-3" style="color: #1e88e5;"></i>
+                <i class="fas fa-calendar-check fa-2x mb-3" style="color: var(--tv-red);"></i>
                 <h5 class="card-title">Event Management</h5>
                 <p class="card-text">Create, manage, and track club events with easy registration and attendance tracking.</p>
             </div>
@@ -112,7 +112,7 @@
     <div class="col-md-6 mb-3">
         <div class="card h-100">
             <div class="card-body">
-                <i class="fas fa-bullhorn fa-2x mb-3" style="color: #43a047;"></i>
+                <i class="fas fa-bullhorn fa-2x mb-3" style="color: var(--tv-red);"></i>
                 <h5 class="card-title">Announcements</h5>
                 <p class="card-text">Share important updates and announcements with all club members instantly.</p>
             </div>
@@ -122,7 +122,7 @@
     <div class="col-md-6 mb-3">
         <div class="card h-100">
             <div class="card-body">
-                <i class="fas fa-chart-line fa-2x mb-3" style="color: #fb8c00;"></i>
+                <i class="fas fa-chart-line fa-2x mb-3" style="color: var(--tv-red);"></i>
                 <h5 class="card-title">Analytics</h5>
                 <p class="card-text">Get detailed insights into member engagement and event participation.</p>
             </div>
@@ -132,7 +132,7 @@
     <div class="col-md-6 mb-3">
         <div class="card h-100">
             <div class="card-body">
-                <i class="fas fa-users fa-2x mb-3" style="color: #e53935;"></i>
+                <i class="fas fa-users fa-2x mb-3" style="color: var(--tv-red);"></i>
                 <h5 class="card-title">Member Management</h5>
                 <p class="card-text">Organize and manage club member information with role-based access control.</p>
             </div>
@@ -141,9 +141,9 @@
 </div>
 
 <!-- CTA Section -->
-<div style="background: linear-gradient(135deg, #1e88e5 0%, #0d47a1 100%); color: white; padding: 3rem 2rem; border-radius: 12px; text-align: center; margin-bottom: 3rem;">
+<div style="background: var(--tv-red-dark); color: white; padding: 3rem 2rem; border-radius: 12px; text-align: center; margin-bottom: 3rem;">
     <h2 style="margin-bottom: 1.5rem; font-weight: 700;">Ready to Get Started?</h2>
-    <p style="font-size: 1.1rem; margin-bottom: 2rem;">Join AI Club and start managing your community effectively.</p>
+    <p style="font-size: 1.1rem; margin-bottom: 2rem;">La plateforme officielle de coordination du Club Tunivisions Kairouan.</p>
     <a href="{% url 'login' %}" class="btn btn-light btn-lg" style="font-weight: 600;">
         <i class="fas fa-sign-in-alt"></i> Login to Continue
     </a>

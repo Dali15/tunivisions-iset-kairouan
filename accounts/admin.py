@@ -6,9 +6,9 @@ import os
 
 class CustomAdminSite(admin.AdminSite):
     """Custom Admin Site Configuration"""
-    site_header = "AI Club Admin Panel"
-    site_title = "AI Club Admin"
-    index_title = "Welcome to AI Club Management"
+    site_header = "Tunivisions Kairouan Admin Panel"
+    site_title = "Tunivisions Kairouan Admin"
+    index_title = "Gestion de Tunivisions Kairouan"
     
     # Enable mobile responsive design
     enable_nav_sidebar = True
@@ -19,9 +19,9 @@ class CustomAdminSite(admin.AdminSite):
 
 
 # Customize admin site header
-admin.site.site_header = "AI Club Admin Panel"
-admin.site.site_title = "AI Club Admin"
-admin.site.index_title = "Welcome to AI Club Management"
+admin.site.site_header = "Tunivisions Kairouan Admin Panel"
+admin.site.site_title = "Tunivisions Kairouan Admin"
+admin.site.index_title = "Gestion de Tunivisions Kairouan"
 
 
 class CustomUserAdmin(UserAdmin):
@@ -42,6 +42,7 @@ class CustomUserAdmin(UserAdmin):
     
     def get_readonly_fields(self, request, obj=None):
         readonly = list(super().get_readonly_fields(request, obj))
+        readonly.extend(('role', 'secondary_role'))
         if not request.user.is_superuser:
             readonly.append('date_joined')
         return readonly
@@ -88,4 +89,3 @@ class RolePermissionAdmin(admin.ModelAdmin):
 
 # Hide RolePermission from admin (use matrix instead)
 # admin.site.register(RolePermission, RolePermissionAdmin)
-

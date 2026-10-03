@@ -40,12 +40,12 @@ Tapez n'importe quel mot pour chercher dans les FAQ!"""
         },
         '/about': {
             'description': 'À propos du club',
-            'response': '🤖 Le club AI est une communauté d\'étudiants passionnés par l\'intelligence artificielle et l\'innovation technologique. Nous organisons des événements, des projets et des discussions!'
+            'response': '🤝 Tunivisions Kairouan est une communauté engagée qui organise des événements, des projets et des actions pour ses membres.'
         },
         '/contact': {
             'description': 'Nous contacter',
             'response': """📧 Contactez-nous:
-• Email: contact@aiclub.com
+• Email: contact@tunivisions-kairouan.tn
 • Les responsables sont disponibles pour répondre à vos questions!"""
         },
         '/members': {

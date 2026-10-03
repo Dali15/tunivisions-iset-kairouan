@@ -1,6 +1,6 @@
 # Deployment Guide
 
-Deploy AI Club to production in minutes using free hosting.
+Deploy Tunivisions Kairouan to production using the configured hosting platform.
 
 ## 🚀 Quick Deployment
 
@@ -18,7 +18,7 @@ Deploy AI Club to production in minutes using free hosting.
    ```
    DEBUG=False
    SECRET_KEY=your-secret-key-here
-    ALLOWED_HOSTS=app-for-ai-club.onrender.com
+    ALLOWED_HOSTS=tunivisions-iset-kairouan.onrender.com
    ```
 
 4. **Deploy** → Click "Create Web Service"

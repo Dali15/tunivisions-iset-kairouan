@@ -4,9 +4,9 @@ services:
   db:
     image: postgres:15-alpine
     environment:
-      POSTGRES_DB: ai_club
-      POSTGRES_USER: aiclub_user
-      POSTGRES_PASSWORD: aiclub_password
+      POSTGRES_DB: ${POSTGRES_DB:-ai_club}
+      POSTGRES_USER: ${POSTGRES_USER:-aiclub_user}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:?Set POSTGRES_PASSWORD in .env.local}
     volumes:
       - postgres_data:/var/lib/postgresql/data
     ports:
@@ -21,8 +21,8 @@ services:
       - "8000:8000"
     environment:
       DEBUG: 'True'
-      SECRET_KEY: 'docker-development-key-change-in-production'
-      DATABASE_URL: 'postgresql://aiclub_user:aiclub_password@db:5432/ai_club'
+      SECRET_KEY: ${SECRET_KEY:?Set SECRET_KEY in .env.local}
+      DATABASE_URL: postgresql://${POSTGRES_USER:-aiclub_user}:${POSTGRES_PASSWORD:?Set POSTGRES_PASSWORD in .env.local}@db:5432/${POSTGRES_DB:-ai_club}
       ALLOWED_HOSTS: 'localhost,127.0.0.1'
     depends_on:
       - db

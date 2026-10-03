@@ -1,12 +1,12 @@
 {% load custom_filters %}
 {% load static %}
 <!DOCTYPE html>
-<html lang="en">
+<html lang="fr">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta name="description" content="AI Club Management System - Professional platform for managing club activities, events, and announcements">
-    <title>{% block title %}AI Club Management System{% endblock %}</title>
+    <meta name="description" content="Plateforme officielle de gestion du Club Tunivisions Kairouan">
+    <title>{% block title %}Tunivisions Kairouan{% endblock %}</title>
 
     <!-- Bootstrap 5 CDN -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
@@ -17,12 +17,13 @@
     
     <style>
         :root {
-            --primary-color: #0d47a1;
-            --secondary-color: #1e88e5;
-            --success-color: #43a047;
-            --danger-color: #e53935;
-            --warning-color: #fb8c00;
-            --light-bg: #f5f5f5;
+            --primary-color: #7f1722;
+            --secondary-color: #b4232f;
+            --accent-color: #e7b85b;
+            --success-color: #2f855a;
+            --danger-color: #b4232f;
+            --warning-color: #b7791f;
+            --light-bg: #f6f7f8;
         }
 
         * {
@@ -32,7 +33,7 @@
         }
 
         body {
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            font-family: Georgia, 'Times New Roman', serif;
             background-color: var(--light-bg);
             min-height: 100vh;
             display: flex;
@@ -41,7 +42,7 @@
 
         /* Navbar Styles */
         .navbar {
-            background: linear-gradient(135deg, var(--primary-color) 0%, var(--secondary-color) 100%);
+            background: var(--primary-color);
             box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
             padding: 1rem 0;
         }
@@ -87,7 +88,7 @@
         }
 
         .card-header {
-            background: linear-gradient(135deg, var(--primary-color) 0%, var(--secondary-color) 100%);
+            background: var(--primary-color);
             color: white;
             border: none;
             font-weight: 600;
@@ -102,11 +103,11 @@
         }
 
         .btn-primary {
-            background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+            background: var(--secondary-color);
         }
 
         .btn-primary:hover {
-            background: linear-gradient(135deg, #0d3a8a, #1565c0);
+            background: var(--primary-color);
             transform: translateY(-2px);
             box-shadow: 0 4px 12px rgba(13, 71, 161, 0.4);
         }
@@ -150,7 +151,7 @@
 
         .form-control:focus, .form-select:focus {
             border-color: var(--secondary-color);
-            box-shadow: 0 0 0 0.2rem rgba(30, 136, 229, 0.25);
+            box-shadow: 0 0 0 0.2rem rgba(180, 35, 47, 0.14);
         }
 
         .form-label {
@@ -185,14 +186,14 @@
         }
 
         .alert-info {
-            background-color: #e3f2fd;
-            border-left-color: var(--secondary-color);
-            color: #0d47a1;
+            background-color: var(--tv-red-soft);
+            border-left-color: var(--tv-red);
+            color: var(--tv-red-dark);
         }
 
         /* Footer */
         footer {
-            background: linear-gradient(135deg, var(--primary-color) 0%, var(--secondary-color) 100%);
+            background: var(--primary-color);
             color: white;
             text-align: center;
             padding: 2rem;
@@ -223,7 +224,7 @@
         }
 
         .table thead {
-            background: linear-gradient(135deg, var(--primary-color) 0%, var(--secondary-color) 100%);
+            background: var(--tv-red-dark);
             color: white;
         }
 
@@ -251,6 +252,63 @@
             align-items: center;
             gap: 0.5rem;
         }
+
+        .brand-mark {
+            display: inline-grid;
+            place-items: center;
+            width: 32px;
+            height: 32px;
+            margin-right: 0.35rem;
+            border: 1px solid var(--accent-color);
+            color: var(--accent-color);
+            font-size: 0.8rem;
+            letter-spacing: 1px;
+        }
+
+        .eyebrow {
+            color: var(--secondary-color);
+            font-size: 0.78rem;
+            font-weight: 700;
+            letter-spacing: 0.12em;
+            text-transform: uppercase;
+            margin-bottom: 0.35rem;
+        }
+
+        .section-panel {
+            background: #fff;
+            border: 1px solid #dbe5df;
+            border-radius: 8px;
+            padding: 1.25rem;
+            box-shadow: 0 8px 24px rgba(16, 42, 67, 0.06);
+        }
+
+        .section-heading, .list-row {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 1rem;
+        }
+
+        .section-heading { margin-bottom: 1rem; }
+        .section-heading h2 { font-size: 1.15rem; margin: 0; }
+        .list-row { border-top: 1px solid #edf1ee; padding: 0.8rem 0; }
+        .list-row span { color: #6c7a75; font-size: 0.9rem; }
+
+        .stat-card {
+            position: relative;
+            overflow: hidden;
+            min-height: 116px;
+            padding: 1.1rem;
+            background: #fff;
+            border-left: 4px solid var(--accent-color);
+            border-radius: 8px;
+            box-shadow: 0 8px 24px rgba(16, 42, 67, 0.06);
+        }
+
+        .stat-card span, .stat-card strong { display: block; }
+        .stat-card span { color: #6c7a75; font-size: 0.9rem; }
+        .stat-card strong { color: var(--primary-color); font-size: 2rem; }
+        .stat-card i { position: absolute; right: 1rem; bottom: 1rem; color: #d5e9e1; font-size: 2rem; }
 
         /* Responsive */
         @media (max-width: 768px) {
@@ -285,136 +343,72 @@
             text-decoration: underline;
         }
     </style>
+    <link rel="stylesheet" href="{% static 'tunivisions/css/theme.css' %}?v=20261003-profile-crop-ui">
     {% block extra_css %}{% endblock %}
 </head>
-<body>
+<body class="tv-app">
 
-<!-- NAVBAR -->
-<nav class="navbar navbar-expand-lg navbar-dark">
-    <div class="container-fluid">
-        <a class="navbar-brand" href="{% url 'dashboard' %}">
-            <i class="fas fa-brain"></i> AI Club
-        </a>
-
-        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
-            <span class="navbar-toggler-icon"></span>
-        </button>
-
-        <div class="collapse navbar-collapse" id="navbarNav">
-            <ul class="navbar-nav ms-auto">
-                {% if user.is_authenticated %}
-                    <li class="nav-item">
-                        <a class="nav-link" href="{% url 'dashboard' %}">
-                            <i class="fas fa-chart-line"></i> Dashboard
-                        </a>
-                    </li>
-
-                    <li class="nav-item">
-                        <a class="nav-link" href="{% url 'event_list' %}">
-                            <i class="fas fa-calendar"></i> Events
-                        </a>
-                    </li>
-
-                    <li class="nav-item">
-                        <a class="nav-link" href="{% url 'member_list' %}">
-                            <i class="fas fa-users"></i> Members
-                        </a>
-                    </li>
-
-                    <li class="nav-item">
-                        <a class="nav-link" href="{% url 'project_list' %}">
-                            <i class="fas fa-project-diagram"></i> Projects
-                        </a>
-                    </li>
-
-                    <li class="nav-item">
-                        <a class="nav-link" href="{% url 'assistant:chat' %}">
-                            <i class="fas fa-robot"></i> Assistant
-                        </a>
-                    </li>
-
-                    <li class="nav-item">
-                        <a class="nav-link" href="{% url 'announcement_list' %}">
-                            <i class="fas fa-bell"></i> Announcements
-                        </a>
-                    </li>
-
-                    {% if user.is_bureau %}
-                    <li class="nav-item">
-                        <a class="nav-link text-warning" href="/admin/">
-                            <i class="fas fa-cog"></i> Admin
-                        </a>
-                    </li>
-                    {% endif %}
-
-                    <li class="nav-item dropdown">
-                        <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-bs-toggle="dropdown">
-                            <i class="fas fa-user-circle"></i> {{ user.username }}
-                        </a>
-                        <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="navbarDropdown">
-                            <li><span class="dropdown-item-text">Role: <strong>{{ user.role }}</strong></span></li>
-                            <li><hr class="dropdown-divider"></li>
-                            <li>
-                                <a class="dropdown-item" href="{% url 'member_profile' user.id %}">
-                                    <i class="fas fa-user"></i> View Profile
-                                </a>
-                            </li>
-                            <li>
-                                <a class="dropdown-item" href="{% url 'edit_profile' %}">
-                                    <i class="fas fa-edit"></i> Edit Profile
-                                </a>
-                            </li>
-                            <li><hr class="dropdown-divider"></li>
-                            <li>
-                                <form method="post" action="{% url 'logout' %}" style="display:inline;">
-                                    {% csrf_token %}
-                                    <button type="submit" class="dropdown-item">
-                                        <i class="fas fa-sign-out-alt"></i> Logout
-                                    </button>
-                                </form>
-                            </li>
-                        </ul>
-                    </li>
-                {% else %}
-                    <li class="nav-item">
-                        <a class="nav-link" href="{% url 'signup' %}">
-                            <i class="fas fa-user-plus"></i> Sign Up
-                        </a>
-                    </li>
-
-                    <li class="nav-item">
-                        <a class="nav-link" href="{% url 'login' %}">
-                            <i class="fas fa-sign-in-alt"></i> Login
-                        </a>
-                    </li>
-                {% endif %}
-            </ul>
-        </div>
-
-        <!-- Action Buttons -->
-        {% if user.is_authenticated %}
-        <div class="ms-auto d-flex gap-2" style="flex-wrap: wrap;">
-            {% if user.role == 'president' or user.role == 'vice_president' or user.role == 'events_manager' %}
-            <a class="btn btn-outline-light btn-sm" href="{% url 'create_event' %}">
-                <i class="fas fa-plus"></i> Create Event
-            </a>
+<aside class="tv-sidebar" id="tvSidebar">
+    <a class="tv-brand" href="{% url 'dashboard' %}">
+        <img src="{% static 'tunivisions/logo.png' %}" alt="Logo officiel Tunivisions Kairouan">
+        <span><strong>Tunivisions</strong>Kairouan</span>
+    </a>
+    {% if user.is_authenticated %}
+    <div class="tv-sidebar-nav">
+        <div class="tv-nav-label">Navigation</div>
+        <nav class="tv-nav" aria-label="Navigation principale">
+            <a class="{% if request.path == '/dashboard/' %}tv-active{% endif %}" href="{% url 'dashboard' %}"><i class="fas fa-chart-line"></i> Dashboard</a>
+            {% if user|can_access:"members.view" %}<a class="{% if '/members/' in request.path %}tv-active{% endif %}" href="{% url 'member_list' %}"><i class="fas fa-users"></i> Members</a>{% endif %}
+            {% if user|can_access:"events.view" %}<a class="{% if '/events/' in request.path %}tv-active{% endif %}" href="{% url 'event_list' %}"><i class="fas fa-calendar-days"></i> Events</a>{% endif %}
+            {% if user|can_access:"projects.view" %}<a class="{% if '/projects/' in request.path %}tv-active{% endif %}" href="{% url 'project_list' %}"><i class="fas fa-diagram-project"></i> Projects</a>{% endif %}
+            {% if user|can_access:"announcements.view" %}<a class="{% if '/announcements/' in request.path %}tv-active{% endif %}" href="{% url 'announcement_list' %}"><i class="fas fa-bullhorn"></i> Announcements</a>{% endif %}
+            {% if user|can_access:"bd.view" or user|can_access:"assistant.use" %}
+            <div class="tv-nav-group-label">Modules</div>
+            {% if user|can_access:"bd.view" %}<a class="{% if '/business-development/' in request.path %}tv-active{% endif %}" href="{% url 'business_development:dashboard' %}"><i class="fas fa-handshake"></i> Business Development</a>{% endif %}
+            {% if user|can_access:"assistant.use" %}<a class="{% if '/assistant/' in request.path %}tv-active{% endif %}" href="{% url 'assistant:chat' %}"><i class="fas fa-comments"></i> Assistant / Chat</a>{% endif %}
             {% endif %}
-
-            {% if user.role == 'president' or user.role == 'vice_president' or user.role == 'media' %}
-            <a class="btn btn-outline-light btn-sm" href="{% url 'create_announcement' %}">
-                <i class="fas fa-plus"></i> Announcement
-            </a>
+            {% if user|can_access:"members.roles.manage" or user|can_access:"bureau.messages.view" or user|can_access:"history.view" %}
+            <div class="tv-nav-group-label">Administration</div>
+            {% if user|can_access:"members.roles.manage" %}<a class="{% if '/manage-member-roles/' in request.path %}tv-active{% endif %}" href="{% url 'manage_member_roles' %}"><i class="fas fa-user-tag"></i> Gestion des rôles</a>{% endif %}
+            {% if user|can_access:"bureau.messages.view" %}<a class="{% if '/bureau-messages/' in request.path %}tv-active{% endif %}" href="{% url 'bureau_messages' %}"><i class="fas fa-inbox"></i> Messages du bureau</a>{% endif %}
+            {% if user|can_access:"history.view" %}<a class="{% if '/history/' in request.path %}tv-active{% endif %}" href="{% url 'activity_history' %}"><i class="fas fa-clock-rotate-left"></i> History</a>{% endif %}
             {% endif %}
-        </div>
-        {% endif %}
+            {% if user|can_access:"bureau.messages.send" %}
+            <div class="tv-nav-group-label">Contact</div>
+            <a class="{% if '/contact-bureau/' in request.path %}tv-active{% endif %}" href="{% url 'contact_bureau' %}"><i class="fas fa-paper-plane"></i> Contacter le bureau</a>
+            {% endif %}
+            {% if user|can_access:"members.roles.manage" %}
+            <div class="tv-nav-group-label">Configuration</div>
+            <a class="{% if '/footer-settings/' in request.path %}tv-active{% endif %}" href="{% url 'footer_settings' %}"><i class="fas fa-pen-to-square"></i> Modifier le footer</a>
+            {% endif %}
+        </nav>
     </div>
-</nav>
+    <div class="tv-sidebar-footer">
+        <div class="tv-user-mini"><strong>{{ user.get_full_name|default:user.username }}</strong>{{ user.get_role_display }}</div>
+        <a class="tv-nav" href="{% url 'member_profile' user.id %}"><span><i class="fas fa-user"></i> Profile</span></a>
+        {% if user.is_staff %}<a class="tv-nav" href="/admin/"><span><i class="fas fa-shield-halved"></i> Admin</span></a>{% endif %}
+        <form method="post" action="{% url 'logout' %}">{% csrf_token %}<button class="tv-nav tv-nav-logout" type="submit"><i class="fas fa-right-from-bracket"></i> Logout</button></form>
+    </div>
+    {% else %}
+    <div class="tv-sidebar-footer"><a class="btn btn-primary w-100" href="{% url 'login' %}">Connexion</a></div>
+    {% endif %}
+</aside>
+
+<div class="tv-main">
+<header class="tv-header">
+    <div class="d-flex align-items-center">
+        <button class="tv-mobile-toggle" type="button" aria-label="Ouvrir le menu" onclick="document.getElementById('tvSidebar').classList.toggle('tv-open')"><i class="fas fa-bars"></i></button>
+        <div><div class="tv-header-kicker">Tunivisions Kairouan</div><h1>{% block page_heading %}Plateforme de gestion du club{% endblock %}</h1></div>
+    </div>
+    {% if user.is_authenticated %}<div class="tv-header-user"><div><strong>{{ user.get_full_name|default:user.username }}</strong><span class="tv-role">{{ user.get_role_display }}</span></div><span class="tv-avatar-frame tv-avatar-sm">{% if user.profile_picture %}<img class="tv-avatar-image" src="{{ user.profile_picture.url }}" alt="">{% else %}<span class="tv-avatar-placeholder">{{ user.username|slice:':1'|upper }}</span>{% endif %}</span></div>{% endif %}
+</header>
 
 <!-- MAIN CONTENT -->
-<div class="container mt-4 mb-4">
+<main class="tv-content">
+<div class="container">
     <!-- Logo Section -->
-    <div class="text-center mb-4">
-        <img src="{% static 'ai_club/ailogo.jpg' %}" alt="AI Club Logo" style="max-width: 150px; height: auto;">
+    <div class="tv-main-logo text-center mb-4">
+        <img src="{% static 'tunivisions/logo.png' %}" alt="Logo officiel Tunivisions Kairouan" style="max-width: 150px; height: auto;">
     </div>
 
     {% if messages %}
@@ -428,31 +422,33 @@
 
     {% block content %}{% endblock %}
 </div>
+</main>
 
 <!-- FOOTER -->
-<footer>
+<footer class="tv-footer">
     <div class="container">
         <div class="row mb-3">
             <div class="col-md-4">
-                <h5>About AI Club Iset kairouan</h5>
-                <p>Professional platform for managing club activities and connecting members.</p>
+                <h5>{{ footer_settings.organization_name }}</h5>
+                <p>{{ footer_settings.description }}</p>
             </div>
             <div class="col-md-4">
-                <h5>Quick Links</h5>
+                <h5>{{ footer_settings.quick_links_title }}</h5>
                 <ul class="list-unstyled">
-                    <li><a href="{% url 'event_list' %}">Events</a></li>
-                    <li><a href="{% url 'announcement_list' %}">Announcements</a></li>
+                    <li><a href="{% url 'event_list' %}">{{ footer_settings.events_link_label }}</a></li>
+                    <li><a href="{% url 'announcement_list' %}">{{ footer_settings.announcements_link_label }}</a></li>
                 </ul>
             </div>
             <div class="col-md-4">
-                <h5>Contact</h5>
-                <p>Email: <a href="mailto:med2006dali@gmail.com">med2006dali@gmail.com</a></p>
+                <h5>{{ footer_settings.contact_title }}</h5>
+                <p>Email: <a href="mailto:{{ footer_settings.contact_email }}">{{ footer_settings.contact_email }}</a></p>
             </div>
         </div>
         <hr style="border-color: rgba(255, 255, 255, 0.2);">
-        <p>&copy; 2026 AI Club Iset kairouan Management System. All rights reserved.</p>
+        <p>{{ footer_settings.copyright_text }}</p>
     </div>
 </footer>
+</div>
 
 <!-- Bootstrap JS Bundle -->
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>

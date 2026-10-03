@@ -12,3 +12,8 @@ class EventForm(forms.ModelForm):
             'location': forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'Location'}),
             'max_attendees': forms.NumberInput(attrs={'class': 'form-control', 'placeholder': 'Max Attendees (Optional)'}),
         }
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        for field in self.fields.values():
+            field.widget.attrs.setdefault('class', 'form-control')

@@ -12,6 +12,8 @@ https://docs.djangoproject.com/en/5.2/ref/settings/
 
 from pathlib import Path
 import os
+import secrets
+from django.core.exceptions import ImproperlyConfigured
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -20,11 +22,22 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/5.2/howto/deployment/checklist/
 
-# SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = os.getenv('SECRET_KEY', 'django-insecure-lkm-o2eonvl!ci2%=i4y0s-6&*-lu$*$va^=qat9v*g!^)3i5o')
-
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = os.getenv('DEBUG', 'True') == 'True'
+
+# Production must provide SECRET_KEY through the environment. The development
+# fallback is generated at process start and is never a committed secret.
+SECRET_KEY = os.getenv('SECRET_KEY')
+if not SECRET_KEY:
+    production_environment = (
+        not DEBUG
+        or bool(os.getenv('DATABASE_URL'))
+        or os.getenv('RENDER', '').lower() == 'true'
+    )
+    if not production_environment:
+        SECRET_KEY = secrets.token_urlsafe(50)
+    else:
+        raise ImproperlyConfigured('SECRET_KEY must be set in production environments.')
 
 # Dynamic ALLOWED_HOSTS configuration
 ALLOWED_HOSTS = [
@@ -41,7 +54,7 @@ if os.getenv('ALLOWED_HOSTS'):
 # Add Render-specific domain if in production
 if not DEBUG:
     ALLOWED_HOSTS.extend([
-        'app-for-ai-club.onrender.com',
+        'tunivisions-iset-kairouan.onrender.com',
         '.onrender.com',  # Allow any onrender.com subdomain in production
     ])
 
@@ -83,6 +96,7 @@ INSTALLED_APPS = [
     'dashboard',
     'projects',
     'assistant',
+    'business_development',
 ]
 
 MIDDLEWARE = [
@@ -108,6 +122,7 @@ TEMPLATES = [
                 'django.template.context_processors.request',
                 'django.contrib.auth.context_processors.auth',
                 'django.contrib.messages.context_processors.messages',
+                'dashboard.context_processors.footer_settings',
             ],
         },
     },
@@ -189,7 +204,7 @@ MEDIA_ROOT = BASE_DIR / 'media'
 
 # CSRF & HTTPS Configuration for Production
 CSRF_TRUSTED_ORIGINS = [
-    'https://app-for-ai-club.onrender.com',
+    'https://tunivisions-iset-kairouan.onrender.com',
     'https://*.onrender.com',
 ]
 
@@ -219,4 +234,3 @@ LOGOUT_REDIRECT_URL = 'login'
 # AI Assistant Settings
 GEMINI_API_KEY = os.getenv('GEMINI_API_KEY', '')
 USE_AI_API = os.getenv('USE_AI_API', 'False') == 'True'
-

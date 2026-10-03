@@ -1,0 +1,11 @@
+{% extends 'base.html' %}
+{% block title %}{{ title }} | Tunivisions Kairouan{% endblock %}
+{% block content %}
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <div><p class="eyebrow">Business Development</p><h1 class="page-title mb-0">{{ title }}</h1></div>
+    <a class="btn btn-outline-primary" href="{% url 'business_development:dashboard' %}"><i class="fas fa-arrow-left"></i> Retour</a>
+</div>
+<div class="section-panel">
+    {% for label, value in fields %}<div class="list-row"><strong>{{ label }}</strong><span>{{ value|default:'-' }}</span></div>{% endfor %}
+</div>
+{% endblock %}

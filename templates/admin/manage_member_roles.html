@@ -1,131 +1,61 @@
 {% extends "base.html" %}
+{% load static %}
 
-{% block title %}Manage Member Roles - Admin{% endblock %}
+{% block title %}Gestion des rôles - Tunivisions Kairouan{% endblock %}
+{% block page_heading %}Gestion des rôles{% endblock %}
 
 {% block content %}
-<div class="container my-5">
-  <h2 class="mb-4"><i class="fas fa-users-cog"></i> Manage Member Roles</h2>
+<div class="dashboard-intro">
+  <h2 class="page-title mb-1"><i class="fas fa-users-cog"></i> Gestion des rôles</h2>
+  <p class="text-muted">Modifiez le rôle fonctionnel des membres. Ces rôles ne modifient pas les privilèges Django.</p>
+</div>
 
-  <!-- Search Section -->
-  <div class="card shadow-sm mb-4">
-    <div class="card-header"><strong>Search Members</strong></div>
-    <div class="card-body">
-      <form method="GET" class="row g-2">
-        <div class="col-md-8">
-          <input type="text" name="search" class="form-control" placeholder="Search by name, username, or email..." value="{{ search_query }}">
-        </div>
-        <div class="col-md-4">
-          <button type="submit" class="btn btn-primary w-100"><i class="fas fa-search"></i> Search</button>
-        </div>
-      </form>
-    </div>
-  </div>
-
-  <!-- Members List -->
-  <div class="card shadow-sm">
-    <div class="card-header"><strong>Members ({{ members.count }})</strong></div>
-    <div class="card-body">
-      {% if members %}
-      <div class="table-responsive">
-        <table class="table table-hover">
-          <thead>
-            <tr>
-              <th>Name</th>
-              <th>Username</th>
-              <th>Email</th>
-              <th>Current Role</th>
-              <th>Action</th>
-            </tr>
-          </thead>
-          <tbody>
-            {% for member in members %}
-            <tr>
-              <td>{{ member.get_full_name|default:member.username }}</td>
-              <td>@{{ member.username }}</td>
-              <td>{{ member.email }}</td>
-              <td><span class="badge bg-primary">{{ member.get_role_display }}</span></td>
-              <td>
-                <button class="btn btn-sm btn-warning" data-bs-toggle="collapse" data-bs-target="#role-form-{{ member.id }}">
-                  <i class="fas fa-edit"></i> Manage
-                </button>
-              </td>
-            </tr>
-            <!-- Inline Role Management Form -->
-            <tr>
-              <td colspan="5">
-                <div class="collapse" id="role-form-{{ member.id }}">
-                  <div class="p-3 bg-light rounded mt-2">
-                    <h6 class="mb-3">Change Roles for {{ member.get_full_name|default:member.username }}</h6>
-                    <form method="POST" action="{% url 'manage_user_role' member.id %}" class="row g-3">
-                      {% csrf_token %}
-                      <div class="col-md-5">
-                        <label class="form-label">Primary Role</label>
-                        <select name="role" class="form-select">
-                          {% for code, name in role_choices %}
-                          <option value="{{ code }}" {% if member.role == code %}selected{% endif %}>{{ name }}</option>
-                          {% endfor %}
-                        </select>
-                      </div>
-                      <div class="col-md-5">
-                        <label class="form-label">Secondary Role (Optional)</label>
-                        <select name="secondary_role" class="form-select">
-                          <option value="">-- None --</option>
-                          {% for code, name in role_choices %}
-                          <option value="{{ code }}" {% if member.secondary_role == code %}selected{% endif %}>{{ name }}</option>
-                          {% endfor %}
-                        </select>
-                      </div>
-                      <div class="col-md-2 d-flex align-items-end">
-                        <button type="submit" class="btn btn-success w-100"><i class="fas fa-save"></i> Save</button>
-                      </div>
-                    </form>
-                  </div>
-                </div>
-              </td>
-            </tr>
-            {% endfor %}
-          </tbody>
-        </table>
+<div class="card mb-4">
+  <div class="card-body">
+    <form method="get" class="row g-2">
+      <div class="col-md-9">
+        <label class="visually-hidden" for="member-search">Rechercher un membre</label>
+        <input id="member-search" type="search" name="search" class="form-control" placeholder="Nom, identifiant ou email" value="{{ search_query }}">
       </div>
-      {% else %}
-      <p class="text-muted">No members found. Try adjusting your search.</p>
-      {% endif %}
-    </div>
-  </div>
-
-  <!-- Adding AI Club section -->
-  <div class="ai-club mt-5">
-    <h2>Welcome to the AI Club</h2>
-    <img src="/static/ai_club/ailogo.jpg" alt="AI Club Logo" class="img-fluid" style="max-width: 200px;">
-    <p>Join our AI Club to explore the world of Artificial Intelligence!</p>
-  </div>
-
-  <div class="mt-4">
-    <a href="{% url 'admin:index' %}" class="btn btn-secondary"><i class="fas fa-arrow-left"></i> Back to Admin</a>
+      <div class="col-md-3"><button type="submit" class="btn btn-primary w-100">Rechercher</button></div>
+    </form>
   </div>
 </div>
 
-<style>
-  .collapse:not(.show) {
-    display: none;
-  }
-  .collapse.show {
-    display: block;
-  }
-  .table-hover tbody tr:hover {
-    background-color: #f8f9fa;
-  }
-  .ai-club {
-    text-align: center;
-    padding: 2rem;
-    background-color: #f1f1f1;
-    border-radius: 0.5rem;
-  }
-  .ai-club h2 {
-    margin-bottom: 1rem;
-  }
-  .ai-club img {
-    margin-bottom: 1rem;
-  }
-</style>
+<div class="card">
+  <div class="card-header text-white"><strong>Membres ({{ members|length }})</strong></div>
+  <div class="card-body p-0">
+    <div class="table-responsive">
+      <table class="table table-hover align-middle mb-0">
+        <thead><tr><th>Membre</th><th>Email</th><th>Rôle actuel</th><th>Nouveau rôle</th><th>Action</th></tr></thead>
+        <tbody>
+          {% for member in members %}
+          <tr>
+            <td>{{ member.get_full_name|default:member.username }}</td>
+            <td>{{ member.email|default:"—" }}</td>
+            <td><span class="badge bg-primary">{{ member.get_role_display }}</span></td>
+            {% if member.is_superuser %}
+            <td colspan="2"><span class="text-muted">Modification désactivée pour préserver les privilèges Django du superuser.</span></td>
+            {% else %}
+            <td colspan="2">
+              <form method="post" action="{% url 'update_member_role' member.pk %}" class="d-flex flex-wrap gap-2">
+                {% csrf_token %}
+                <select name="role" class="form-select" aria-label="Nouveau rôle pour {{ member.username }}">
+                  {% for code, label in role_choices %}
+                  <option value="{{ code }}" {% if member.role == code %}selected{% endif %}>{{ label }}</option>
+                  {% endfor %}
+                </select>
+                <button type="submit" class="btn btn-primary text-nowrap"><i class="fas fa-save"></i> Enregistrer</button>
+              </form>
+            </td>
+            {% endif %}
+          </tr>
+          {% empty %}
+          <tr><td colspan="5" class="text-center text-muted py-4">Aucun membre trouvé.</td></tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>
 {% endblock %}

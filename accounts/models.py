@@ -10,21 +10,31 @@ from django.db import models
 
 class User(AbstractUser):
     ROLE_CHOICES = (
-        ('owner', 'Owner'),
-        ('president', 'President'),
-        ('vice_president', 'Vice President'),
-        ('partnerships', 'Responsable Partenariats'),
-        ('design', 'Responsable Design'),
-        ('treasurer', 'Treasurer'),
-        ('secretary', 'Secretaire'), # New Role
-        ('hr', 'Responsable RH'),
-        ('media', 'Responsable Media'),
-        ('events_manager', 'Responsable Événement'),
-        ('member', 'Membre actif'),
+        ('president', 'Président'),
+        ('vp_rh', 'VP RH'),
+        ('assistant_rh', 'Assistant RH'),
+        ('vp_mkc', 'VP MKC'),
+        ('assistant_comm_mkg', 'Assistant Comm/MKG'),
+        ('vp_events', 'VP Events'),
+        ('assistant_event', 'Assistant Événementiel'),
+        ('vp_bd', 'VP BD'),
+        ('assistant_bd', 'Assistant BD'),
+        ('active_member', 'Membre Actif'),
+        # Legacy values remain valid so existing production accounts are preserved.
+        ('owner', 'Ancien Owner'),
+        ('vice_president', 'Ancien Vice-Président'),
+        ('partnerships', 'Ancien Responsable Partenariats'),
+        ('design', 'Ancien Responsable Design'),
+        ('treasurer', 'Ancien Trésorier'),
+        ('secretary', 'Ancien Secrétaire'),
+        ('hr', 'Ancien Responsable RH'),
+        ('media', 'Ancien Responsable Media'),
+        ('events_manager', 'Ancien Responsable Événement'),
+        ('member', 'Ancien Membre'),
     )
 
     role = models.CharField(
-        max_length=20,
+        max_length=30,
         choices=ROLE_CHOICES,
         default='member',
         verbose_name="Primary Role"
@@ -51,9 +61,14 @@ class User(AbstractUser):
 
     def is_bureau(self):
         # Bureau if either role is not member, or staff/superuser
-        is_primary_bureau = self.role != 'member'
-        is_secondary_bureau = self.secondary_role and self.secondary_role != 'member'
+        from .rbac import canonical_role
+        is_primary_bureau = canonical_role(self.role) != 'active_member'
+        is_secondary_bureau = self.secondary_role and canonical_role(self.secondary_role) != 'active_member'
         return is_primary_bureau or is_secondary_bureau or self.is_staff or self.is_superuser
+
+    def can_access(self, permission):
+        from .rbac import has_role_permission
+        return has_role_permission(self, permission)
 
     def save(self, *args, **kwargs):
         # Role permission enforcement is now handled by the post_save signal
@@ -82,6 +97,10 @@ def sync_user_permissions(sender, instance, created, **kwargs):
     if kwargs.get('raw', False):
         return
 
+    # Django superusers keep their admin flags independently of the club role.
+    if instance.is_superuser:
+        return
+
     updates = {}
     
     # Check both roles for Owner/President status
@@ -89,17 +108,6 @@ def sync_user_permissions(sender, instance, created, **kwargs):
     if instance.secondary_role:
         roles.append(instance.secondary_role)
         
-    is_top_admin = 'owner' in roles or 'president' in roles
-    
-    if is_top_admin:
-        # Ensure they are staff and superuser
-        if not instance.is_staff or not instance.is_superuser:
-            User.objects.filter(pk=instance.pk).update(is_staff=True, is_superuser=True)
-            # Update instance in memory to reflect change (though purely local here)
-            instance.is_staff = True
-            instance.is_superuser = True
-        return
-
     # For other roles, they might need is_staff=True to access admin, 
     # but we restrict what they can see via Groups.
     

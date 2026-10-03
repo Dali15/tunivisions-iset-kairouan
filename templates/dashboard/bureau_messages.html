@@ -1,0 +1,42 @@
+{% extends "base.html" %}
+
+{% block title %}Messages du bureau - Tunivisions Kairouan{% endblock %}
+{% block page_heading %}Messages du bureau{% endblock %}
+
+{% block content %}
+<div class="dashboard-intro">
+  <h2 class="page-title mb-1">Messages du bureau</h2>
+  <p class="text-muted">Seuls les messages correspondant à vos rôles fonctionnels sont affichés.</p>
+</div>
+
+<div class="card">
+  <div class="card-body p-0">
+    <div class="table-responsive">
+      <table class="table table-hover align-middle mb-0">
+        <thead><tr><th>Date</th><th>De</th><th>Destinataire</th><th>Objet et message</th><th>Statut</th><th>Action</th></tr></thead>
+        <tbody>
+          {% for bureau_message in bureau_messages %}
+          <tr>
+            <td>{{ bureau_message.created_at|date:"d/m/Y H:i" }}</td>
+            <td>{{ bureau_message.sender.get_full_name|default:bureau_message.sender.username }}</td>
+            <td>{{ bureau_message.get_recipient_role_display }}</td>
+            <td><strong>{{ bureau_message.subject }}</strong><div class="text-muted text-break">{{ bureau_message.message|linebreaksbr }}</div></td>
+            <td>{% if bureau_message.is_read %}<span class="badge bg-success">Lu</span>{% else %}<span class="badge bg-secondary">Non lu</span>{% endif %}</td>
+            <td>
+              {% if not bureau_message.is_read %}
+              <form method="post" action="{% url 'mark_bureau_message_read' bureau_message.pk %}">
+                {% csrf_token %}
+                <button type="submit" class="btn btn-sm btn-outline-primary">Marquer comme lu</button>
+              </form>
+              {% else %}—{% endif %}
+            </td>
+          </tr>
+          {% empty %}
+          <tr><td colspan="6" class="text-center text-muted py-4">Aucun message à afficher.</td></tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>
+{% endblock %}

@@ -1,4 +1,4 @@
-# Contributing to AI Club
+# Contributing to Tunivisions Kairouan
 
 Thank you for your interest in contributing! We welcome contributions of all kinds.
 

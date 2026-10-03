@@ -1,0 +1,37 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block title %}Gestion RH du profil - Tunivisions Kairouan{% endblock %}
+{% block page_heading %}Gestion RH du profil{% endblock %}
+
+{% block content %}
+<div class="tv-form-shell">
+    <p class="eyebrow">Ressources humaines</p>
+    <h2 class="page-title">Modifier le profil de {{ member.get_full_name|default:member.username }}</h2>
+    <div class="card tv-form-card">
+        <div class="card-body">
+            <form method="post" enctype="multipart/form-data" class="tuniv-form" novalidate>
+                {% csrf_token %}
+                {% if form.non_field_errors %}
+                <div class="alert alert-danger" role="alert">{{ form.non_field_errors }}</div>
+                {% endif %}
+                {% for field in form %}
+                <div class="tv-form-field">
+                    <label class="form-label" for="{{ field.id_for_label }}">{{ field.label }}</label>
+                    {{ field }}
+                    {% if field.name == "profile_picture" %}
+                    {% include "members/partials/profile_picture_crop.html" %}
+                    {% endif %}
+                    {% if field.help_text %}<div class="form-text">{{ field.help_text }}</div>{% endif %}
+                    {% for error in field.errors %}<div class="tv-form-error" role="alert">{{ error }}</div>{% endfor %}
+                </div>
+                {% endfor %}
+                <div class="tv-form-actions">
+                    <button type="submit" class="btn btn-primary"><i class="fas fa-save"></i> Enregistrer</button>
+                    <a href="{% url 'member_profile' member.pk %}" class="btn btn-outline-secondary">Annuler</a>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+{% endblock %}

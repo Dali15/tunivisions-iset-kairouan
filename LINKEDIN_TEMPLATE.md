@@ -4,7 +4,7 @@
 
 ---
 
-🚀 Just launched **AI Club** - A production-ready Django web application!
+🚀 Just launched **Tunivisions Kairouan** - A production-ready Django web application!
 
 After weeks of development, I'm proud to share my latest project featuring:
 
@@ -43,7 +43,7 @@ Live Demo: [Render Link]
 
 💬 Building communities is my passion!
 
-I've just released **AI Club** - a platform built specifically for AI communities to:
+I've just released **Tunivisions Kairouan** - a platform built specifically for student club coordination to:
 
 👥 Connect members & build community
 📅 Organize events and keep everyone updated
@@ -71,7 +71,7 @@ Learn More: [README Link]
 
 ---
 
-🎉 **New Project Alert:** AI Club - Community Platform
+🎉 **New Project Alert:** Tunivisions Kairouan - Club Platform
 
 I built a full-featured web application for managing AI communities from scratch:
 
@@ -110,7 +110,7 @@ Open to feedback and contributions!
 
 ---
 
-🤖 Just shipped **AI Club** 🚀
+🤝 Just shipped **Tunivisions Kairouan** 🚀
 
 A Django web app for AI communities with chat assistant, event management, and member profiles. Deployed to production, fully documented, open source.
 
@@ -166,6 +166,6 @@ Ready to build? 💪
 "Here are 5 things I learned building a production Django app: 1) Environment config... etc"
 
 **Post 4:** Open to Feedback
-"AI Club is live! If you try it out, please share feedback. Always open to suggestions for improvements!"
+"Tunivisions Kairouan is live! If you try it out, please share feedback. Always open to suggestions for improvements!"
 
 ---

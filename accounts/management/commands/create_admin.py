@@ -52,6 +52,6 @@ class Command(BaseCommand):
             
             self.stdout.write(f'📧 Email: {email}')
             self.stdout.write('🔐 Password: ******** (masked)')
-            self.stdout.write(f'\n📍 Login at: https://app-for-ai-club.onrender.com/admin')
+            self.stdout.write(f'\n📍 Login at: https://tunivisions-iset-kairouan.onrender.com/admin')
         except Exception as e:
             self.stdout.write(self.style.ERROR(f'❌ Error: {str(e)}'))

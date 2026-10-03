@@ -6,8 +6,11 @@ import os
 
 
 from django.contrib.auth.decorators import login_required
+from django.views.decorators.http import require_POST
 from django.shortcuts import get_object_or_404
 from .models import User
+from .rbac import has_any_role
+from accounts.decorators import permission_required
 
 def signup_view(request):
     """User registration/signup view."""
@@ -49,7 +52,7 @@ def signup_view(request):
 @login_required
 def pending_members(request):
     """List members waiting for approval."""
-    if request.user.role not in ['owner', 'president']:
+    if not has_any_role(request.user, ['president', 'vp_rh', 'assistant_rh']):
         messages.error(request, "Access denied.")
         return redirect('dashboard')
         
@@ -59,11 +62,10 @@ def pending_members(request):
     return render(request, 'accounts/pending_members.html', {'pending_users': pending_users})
 
 @login_required
+@permission_required('members.approve')
+@require_POST
 def approve_member(request, user_id):
     """Approve a member."""
-    if request.user.role not in ['owner', 'president']:
-        return redirect('dashboard')
-        
     user = get_object_or_404(User, id=user_id)
     user.is_active = True
     user.save()
@@ -71,11 +73,10 @@ def approve_member(request, user_id):
     return redirect('pending_members')
 
 @login_required
+@permission_required('members.approve')
+@require_POST
 def reject_member(request, user_id):
     """Reject (delete) a member."""
-    if request.user.role not in ['owner', 'president']:
-        return redirect('dashboard')
-        
     user = get_object_or_404(User, id=user_id)
     user.delete()
     messages.success(request, f"User {user.username} rejected (deleted).")

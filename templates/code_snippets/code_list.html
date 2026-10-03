@@ -1,6 +1,6 @@
 {% extends "base.html" %}
 
-{% block title %}Code Snippets - AI Club{% endblock %}
+{% block title %}Extraits de code - Tunivisions Kairouan{% endblock %}
 
 {% block content %}
 <div class="container my-5">
@@ -58,7 +58,7 @@
         {% for snippet in snippets %}
         <div class="col-md-6 col-lg-4 mb-4">
             <div class="card shadow-lg h-100">
-                <div class="card-header" style="background: linear-gradient(135deg, #0d47a1 0%, #1e88e5 100%); color: white;">
+                <div class="card-header" style="background: var(--tv-red-dark); color: white;">
                     <h5 class="mb-2">{{ snippet.title }}</h5>
                     <div class="d-flex gap-2 flex-wrap">
                         <span class="badge bg-light text-dark">{{ snippet.get_language_display }}</span>

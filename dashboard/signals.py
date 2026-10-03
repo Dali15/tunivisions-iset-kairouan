@@ -119,6 +119,9 @@ def log_user_login(sender, request, user, **kwargs):
 @receiver(user_logged_out)
 def log_user_logout(sender, request, user, **kwargs):
     """Log user logout"""
+    if user is None or not user.is_authenticated:
+        return
+
     ip = get_client_ip(request)
     
     ActivityLog.objects.create(
